@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 using FootballLeagueDbContext context = new FootballLeagueDbContext();
 
-//await GetAllTeams();
+// await GetAllTeams();
 //await GetOneTeam();
 //await GetMoreThanOneTeam();
 //await AggregateMethods();
