@@ -9,6 +9,6 @@ namespace EntityFrameworkCore.Console
     internal class TeamInfoDTO
     {
         public DateTime CreatedDate { get; set; }
-        public int TeamCount { get; set; }
+        public string TeamName { get; set; }
     }
 }

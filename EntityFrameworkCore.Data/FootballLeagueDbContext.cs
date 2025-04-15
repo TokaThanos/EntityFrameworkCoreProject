@@ -17,6 +17,8 @@ public class FootballLeagueDbContext : DbContext
             .LogTo(Console.WriteLine, LogLevel.Information)
             .EnableSensitiveDataLogging()
             .EnableDetailedErrors();
+        optionsBuilder.ConfigureWarnings(warings =>
+            warings.Ignore(RelationalEventId.PendingModelChangesWarning));
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
