@@ -12,7 +12,7 @@ using FootballLeagueDbContext context = new FootballLeagueDbContext();
 //await GroupByMethod();
 //await OrderByMethod();
 //await SkipAndTake();
-//await GroupByWithProjection();
+// await GroupByWithProjection();
 
 //Console.WriteLine("Enter 0 or 1 to test");
 //int option = Convert.ToInt32(Console.ReadLine());
@@ -76,7 +76,9 @@ async Task AggregateMethods()
 async Task GroupByMethod()
 {
     var groupedTeams = context.Teams
+        // .Where(team => team.Id > 1) // this is used as where clause
         .GroupBy(team => team.CreatedDate.Date);
+        // .Where(group => group.Count() > 2); // this is used as having clause
 
     foreach (var group in groupedTeams)
     {
@@ -117,13 +119,12 @@ async Task SkipAndTake()
 
 async Task GroupByWithProjection()
 {
-    var groupedTeams = await context.Teams.
-        GroupBy(team => team.CreatedDate.Date)
-        .Select(group =>  new TeamInfoDTO { CreatedDate = group.Key, TeamCount = group.Count() }).ToListAsync();
+    var teams = await context.Teams
+        .Select(team =>  new TeamInfoDTO { CreatedDate = team.CreatedDate, TeamName = team.Name }).ToListAsync();
 
-    foreach (TeamInfoDTO team in groupedTeams)
+    foreach (TeamInfoDTO team in teams)
     {
-        Console.WriteLine($"{team.TeamCount} teams were created on {team.CreatedDate.Date.ToShortDateString()}");
+        Console.WriteLine($"{team.TeamName} was created on {team.CreatedDate.Date.ToShortDateString()}");
     }
 }
 
