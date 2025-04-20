@@ -8,3 +8,8 @@ services:
       SA_PASSWORD: ${DB_PASSWORD}
       ACCEPT_EULA: "Y"
       MSSQL_PID: Express
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+volumes:
+  mssql_data:

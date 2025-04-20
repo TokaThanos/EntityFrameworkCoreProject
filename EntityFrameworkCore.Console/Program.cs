@@ -6,20 +6,31 @@ using Microsoft.EntityFrameworkCore;
 using FootballLeagueDbContext context = new FootballLeagueDbContext();
 
 // await GetAllTeams();
-//await GetOneTeam();
-//await GetMoreThanOneTeam();
-//await AggregateMethods();
-//await GroupByMethod();
-//await OrderByMethod();
-//await SkipAndTake();
+// await GetOneTeam();
+// await GetMoreThanOneTeam();
+// await AggregateMethods();
+// await GroupByMethod();
+// await OrderByMethod();
+// await SkipAndTake();
 // await GroupByWithProjection();
 
-//Console.WriteLine("Enter 0 or 1 to test");
-//int option = Convert.ToInt32(Console.ReadLine());
-//Console.WriteLine("Enter true or false for query optimization");
-//bool optimizationCheck = Convert.ToBoolean(Console.ReadLine());
+// Console.WriteLine("Enter 0 or 1 to test");
+// int option = Convert.ToInt32(Console.ReadLine());
+// Console.WriteLine("Enter true or false for query optimization");
+// bool optimizationCheck = Convert.ToBoolean(Console.ReadLine());
 
-//await PerformanceHackWithIQueryable(option, optimizationCheck);
+// await PerformanceHackWithIQueryable(option, optimizationCheck);
+
+// await AddNewCoach();
+// await AddNewCoaches();
+
+// await UpdateCoach();
+// await UpdateCoachWithNoTracking();
+
+// await DeleteCoach();
+
+// await ExecuteDelete();
+// await ExecuteUpdate();
 
 async Task GetAllTeams()
 {
@@ -175,4 +186,85 @@ async Task PerformanceHackWithIQueryable(int choice, bool queryOptimizationCheck
             Console.WriteLine(team.Name);
         }
     }
+}
+
+async Task AddNewCoach()
+{
+    var newCoach = new Coach
+    {
+        Name = "Jose Mourinho",
+        CreatedDate = DateTime.Now,
+    };
+    await context.Coaches.AddAsync(newCoach);
+    await context.SaveChangesAsync();
+}
+
+async Task AddNewCoaches()
+{
+    List<Coach> newCoaches = new List<Coach>()
+    {
+        new Coach
+        {
+            Name = "Carlo Ancelotti",
+            CreatedDate = DateTime.Now,
+        },
+        new Coach
+        {
+            Name = "Pep Guardiola",
+            CreatedDate = DateTime.Now,
+        }
+    };
+    await context.Coaches.AddRangeAsync(newCoaches);
+    await context.SaveChangesAsync();
+}
+
+async Task UpdateCoach()
+{
+    var coach = await context.Coaches.FindAsync(1);
+    coach.Name = "Luis Enrique";
+    await context.SaveChangesAsync();
+}
+
+async Task UpdateCoachWithNoTracking()
+{
+    var coach = await context.Coaches
+        .AsNoTracking()
+        .FirstOrDefaultAsync(coach => coach.Id == 1);
+
+    coach.Name = "Xavi Hernandez";
+
+    // We need to mark the entity as modified because no tracking is enabled
+    // Either we can update the entity or we can set the state to modified
+
+    context.Update(coach);
+    // or
+    // context.Entry(coach).State = EntityState.Modified;
+
+    await context.SaveChangesAsync();
+}
+
+async Task DeleteCoach()
+{
+    var coach = await context.Coaches.FindAsync(1);
+    context.Remove(coach);
+    await context.SaveChangesAsync();
+}
+
+async Task ExecuteDelete()
+{
+    // Always executed directly in SQL, and do not require EF Core to track the entities.
+    // automatically savechanges is called once executed
+    await context.Coaches.Where(coach => coach.Name == "Jose Mourinho").ExecuteDeleteAsync();
+}
+
+async Task ExecuteUpdate()
+{
+    // Always executed directly in SQL, and do not require EF Core to track the entities.
+    // automatically savechanges is called once executed
+    await context.Coaches
+        .Where(coach => coach.Name == "Jose Mourinho")
+        .ExecuteUpdateAsync(coach => coach
+        .SetProperty(prop => prop.Name, "Hansi Flick")
+        .SetProperty(prop => prop.CreatedDate, DateTime.Now)       
+    );
 }
