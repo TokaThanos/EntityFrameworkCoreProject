@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.Domain;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
+// using EntityFrameworkCore.Data.Configurations;
 
 namespace EntityFrameworkCore.Data;
 
@@ -9,6 +11,8 @@ public class FootballLeagueDbContext : DbContext
 {
     public DbSet<Team> Teams { get; set; }
     public DbSet<Coach> Coaches { get; set; }
+    public DbSet<League> Leagues { get; set; }
+    public DbSet<Match> Matches { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -23,10 +27,7 @@ public class FootballLeagueDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Team>().HasData(
-            new Team { Id = 1, Name = "Manchester United", CreatedDate = DateTimeOffset.UtcNow.DateTime },
-            new Team { Id = 2, Name = "F.C. Barcelona", CreatedDate = DateTimeOffset.UtcNow.DateTime },
-            new Team { Id = 3, Name = "Juventus", CreatedDate = DateTimeOffset.UtcNow.DateTime }
-        );
+        // modelBuilder.ApplyConfiguration(new TeamConfiguration);
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }
