@@ -4,6 +4,7 @@ using EntityFrameworkCore.Domain;
 using Microsoft.EntityFrameworkCore;
 
 using FootballLeagueDbContext context = new FootballLeagueDbContext();
+await context.Database.MigrateAsync();
 
 // await GetAllTeams();
 // await GetOneTeam();
