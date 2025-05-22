@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.Data.Configurations
         {
             builder.HasData(
                 new League { Id = 1, Name = "La Liga" },
-                new League { Id = 2, Name = "Seria A" },
+                new League { Id = 2, Name = "Serie A" },
                 new League { Id = 3, Name = "English Premier League" }
             );
         }

@@ -4,8 +4,9 @@ using EntityFrameworkCore.Domain;
 using Microsoft.EntityFrameworkCore;
 
 using FootballLeagueDbContext context = new FootballLeagueDbContext();
-await context.Database.MigrateAsync();
+// await context.Database.MigrateAsync();
 
+#region Method Calls
 // await GetAllTeams();
 // await GetOneTeam();
 // await GetMoreThanOneTeam();
@@ -33,6 +34,14 @@ await context.Database.MigrateAsync();
 // await ExecuteDelete();
 // await ExecuteUpdate();
 
+// await AddMatchAsync();
+// await AddTeamWithCoachAsync();
+// await AddLeagueWithTeamsAsync();
+await UpdateLeagueInTeamAsync();
+
+#endregion
+
+#region Read Queries
 async Task GetAllTeams()
 {
     var teams = await context.Teams
@@ -188,7 +197,9 @@ async Task PerformanceHackWithIQueryable(int choice, bool queryOptimizationCheck
         }
     }
 }
+#endregion
 
+#region Write Queries
 async Task AddNewCoach()
 {
     var newCoach = new Coach
@@ -269,3 +280,90 @@ async Task ExecuteUpdate()
         .SetProperty(prop => prop.CreatedDate, DateTime.Now)       
     );
 }
+#endregion
+
+#region Related Data
+async Task AddMatchAsync()
+{
+    var match = new Match
+    {
+        HomeTeamId = 101,
+        AwayTeamId = 103,
+        Date = new DateTime(2025, 6, 12),
+        TicketPrice = 25
+    };
+
+    await context.AddAsync(match);
+    await context.SaveChangesAsync();
+}
+
+async Task AddTeamWithCoachAsync()
+{
+    var team = new Team
+    {
+        Name = "Inter Milan",
+        Coach = new Coach
+        {
+            Name = "Simone Inzaghi"
+        }
+    };
+
+    await context.AddAsync(team);
+    await context.SaveChangesAsync();
+}
+
+async Task AddLeagueWithTeamsAsync()
+{
+    var league = new League
+    {
+        Name = "Bundesliga",
+        Teams = new List<Team>()
+        {
+            new Team
+            {
+                Name = "Bayer Leverkusen",
+                Coach = new Coach 
+                {
+                    Name = "Xavi Alonso"
+                }
+            },
+            new Team
+            {
+                Name = "Borussia Dortmund",
+                Coach = new Coach 
+                {
+                    Name = "Niko Kovac"
+                }
+            },
+            new Team
+            {
+                Name = "Bayern Munich",
+                Coach = new Coach 
+                {
+                    Name = "Vincent Kompany"
+                }
+            }
+        }
+    };
+
+    await context.AddAsync(league);
+    await context.SaveChangesAsync();
+}
+
+async Task UpdateLeagueInTeamAsync()
+{
+    var team = await context.Teams
+        .FirstOrDefaultAsync(team => team.Name == "Inter Milan");
+    
+    var league = await context.Leagues
+        .FirstOrDefaultAsync(league => league.Name == "Serie A");
+
+    if (team == null || league == null) return;
+
+    team.League = league;
+
+    await context.SaveChangesAsync();
+}
+
+#endregion
+
