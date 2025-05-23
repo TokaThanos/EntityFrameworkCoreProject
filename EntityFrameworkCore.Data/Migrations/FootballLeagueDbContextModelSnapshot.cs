@@ -114,7 +114,7 @@ namespace EntityFrameworkCore.Data.Migrations
                             Id = 2,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Seria A"
+                            Name = "Serie A"
                         },
                         new
                         {
