@@ -5,7 +5,6 @@
 # Ignore compiled binaries and object files
 bin/
 obj/
-Migrations/
 
 # Ignore generated files and folders
 *.dll
