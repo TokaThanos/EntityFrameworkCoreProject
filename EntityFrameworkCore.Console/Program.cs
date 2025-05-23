@@ -35,9 +35,8 @@ using FootballLeagueDbContext context = new FootballLeagueDbContext();
 // await ExecuteUpdate();
 
 // await AddMatchAsync();
-// await AddTeamWithCoachAsync();
+// await AddTeamWithCoachAndLeagueAsync();
 // await AddLeagueWithTeamsAsync();
-await UpdateLeagueInTeamAsync();
 
 #endregion
 
@@ -297,15 +296,17 @@ async Task AddMatchAsync()
     await context.SaveChangesAsync();
 }
 
-async Task AddTeamWithCoachAsync()
+async Task AddTeamWithCoachAndLeagueAsync()
 {
+    var league = await context.Leagues.FirstOrDefaultAsync(league => league.Name == "Serie A");
     var team = new Team
     {
         Name = "Inter Milan",
         Coach = new Coach
         {
             Name = "Simone Inzaghi"
-        }
+        },
+        League = league
     };
 
     await context.AddAsync(team);
@@ -347,21 +348,6 @@ async Task AddLeagueWithTeamsAsync()
     };
 
     await context.AddAsync(league);
-    await context.SaveChangesAsync();
-}
-
-async Task UpdateLeagueInTeamAsync()
-{
-    var team = await context.Teams
-        .FirstOrDefaultAsync(team => team.Name == "Inter Milan");
-    
-    var league = await context.Leagues
-        .FirstOrDefaultAsync(league => league.Name == "Serie A");
-
-    if (team == null || league == null) return;
-
-    team.League = league;
-
     await context.SaveChangesAsync();
 }
 
