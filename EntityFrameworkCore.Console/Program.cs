@@ -37,7 +37,8 @@ using FootballLeagueDbContext context = new FootballLeagueDbContext();
 // await AddMatchAsync();
 // await AddTeamWithCoachAndLeagueAsync();
 // await AddLeagueWithTeamsAsync();
-await EagerLoadLeaguesWithTeamsAndCoachesAsync();
+// await EagerLoadLeaguesWithTeamsAndCoachesAsync();
+// await ExplicitLoadLeagueWithTeamsAndCoachAsync();
 
 #endregion
 
@@ -364,6 +365,35 @@ async Task EagerLoadLeaguesWithTeamsAndCoachesAsync()
         Console.WriteLine($"League - {league.Name}");
         foreach (var team in league.Teams)
         {
+            Console.WriteLine($"{team.Name} - {team.Coach.Name}");
+        }
+    }
+}
+
+async Task ExplicitLoadLeagueWithTeamsAndCoachAsync()
+{
+    var league = await context.FindAsync<League>(4);
+
+    if (!league.Teams.Any())
+    {
+        Console.WriteLine("Teams have not been loaded");
+    }
+
+    await context.Entry(league)
+        .Collection(l => l.Teams)
+        .Query() // Query is used here to get the underlying IQueryable<T> to perform the manual batch load along with explicit loading
+        .Include(t => t.Coach)
+        .LoadAsync();
+
+    if (league.Teams.Any())
+    {
+        foreach (var team in league.Teams)
+        {
+            // Explicitly loading in a loop is inefficient
+            // await context.Entry(team)
+            //     .Reference(t => t.Coach)
+            //     .LoadAsync();
+            
             Console.WriteLine($"{team.Name} - {team.Coach.Name}");
         }
     }
