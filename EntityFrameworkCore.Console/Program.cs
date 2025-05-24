@@ -37,6 +37,7 @@ using FootballLeagueDbContext context = new FootballLeagueDbContext();
 // await AddMatchAsync();
 // await AddTeamWithCoachAndLeagueAsync();
 // await AddLeagueWithTeamsAsync();
+await EagerLoadLeaguesWithTeamsAndCoachesAsync();
 
 #endregion
 
@@ -323,7 +324,7 @@ async Task AddLeagueWithTeamsAsync()
             new Team
             {
                 Name = "Bayer Leverkusen",
-                Coach = new Coach 
+                Coach = new Coach
                 {
                     Name = "Xavi Alonso"
                 }
@@ -331,7 +332,7 @@ async Task AddLeagueWithTeamsAsync()
             new Team
             {
                 Name = "Borussia Dortmund",
-                Coach = new Coach 
+                Coach = new Coach
                 {
                     Name = "Niko Kovac"
                 }
@@ -339,7 +340,7 @@ async Task AddLeagueWithTeamsAsync()
             new Team
             {
                 Name = "Bayern Munich",
-                Coach = new Coach 
+                Coach = new Coach
                 {
                     Name = "Vincent Kompany"
                 }
@@ -349,6 +350,23 @@ async Task AddLeagueWithTeamsAsync()
 
     await context.AddAsync(league);
     await context.SaveChangesAsync();
+}
+
+async Task EagerLoadLeaguesWithTeamsAndCoachesAsync()
+{
+    var leagues = await context.Leagues
+        .Include(league => league.Teams)
+        .ThenInclude(team => team.Coach)
+        .ToListAsync();
+
+    foreach (var league in leagues)
+    {
+        Console.WriteLine($"League - {league.Name}");
+        foreach (var team in league.Teams)
+        {
+            Console.WriteLine($"{team.Name} - {team.Coach.Name}");
+        }
+    }
 }
 
 #endregion
