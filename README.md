@@ -1,5 +1,7 @@
 # EntityFrameworkCore Football League Solution
 
+![ERD Diagram](images/erd.png)
+
 This solution demonstrates a football league management system using Entity Framework Core with a SQL Server backend. It includes projects for the domain models, data access, and a console application for running queries and commands.
 
 ## Project Structure
