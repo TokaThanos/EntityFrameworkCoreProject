@@ -39,6 +39,8 @@ using FootballLeagueDbContext context = new FootballLeagueDbContext();
 // await AddLeagueWithTeamsAsync();
 // await EagerLoadLeaguesWithTeamsAndCoachesAsync();
 // await ExplicitLoadLeagueWithTeamsAndCoachAsync();
+// await AddMoreMatchesAsync();
+await GetTeamsWhereTicketPriceGreaterOrEqual20USDWithHomeTeamScoringGoalsAsync();
 
 #endregion
 
@@ -395,6 +397,106 @@ async Task ExplicitLoadLeagueWithTeamsAndCoachAsync()
             //     .LoadAsync();
             
             Console.WriteLine($"{team.Name} - {team.Coach.Name}");
+        }
+    }
+}
+
+async Task AddMoreMatchesAsync()
+{
+    List<Match> matches = new List<Match>()
+    {
+        new Match
+        {
+            HomeTeamId = 102,
+            AwayTeamId = 103,
+            HomeTeamScore = 3,
+            AwayTeamScore = 2,
+            TicketPrice = 25,
+            Date = new DateTime(2025, 05, 20)
+        },
+        new Match
+        {
+            HomeTeamId = 108,
+            AwayTeamId = 106,
+            HomeTeamScore = 1,
+            AwayTeamScore = 0,
+            TicketPrice = 15,
+            Date = new DateTime(2025, 05, 18)
+        },
+        new Match
+        {
+            HomeTeamId = 105,
+            AwayTeamId = 101,
+            HomeTeamScore = 1,
+            AwayTeamScore = 1,
+            TicketPrice = 15,
+            Date = new DateTime(2025, 05, 10)
+        },
+        new Match
+        {
+            HomeTeamId = 101,
+            AwayTeamId = 107,
+            HomeTeamScore = 2,
+            AwayTeamScore = 3,
+            TicketPrice = 20,
+            Date = new DateTime(2025, 04, 12)
+        },
+        new Match
+        {
+            HomeTeamId = 107,
+            AwayTeamId = 108,
+            HomeTeamScore = 0,
+            AwayTeamScore = 0,
+            TicketPrice = 17,
+            Date = new DateTime(2025, 05, 22)
+        },
+        new Match
+        {
+            HomeTeamId = 105,
+            AwayTeamId = 103,
+            HomeTeamScore = 3,
+            AwayTeamScore = 5,
+            TicketPrice = 15,
+            Date = new DateTime(2025, 05, 24)
+        },
+        new Match
+        {
+            HomeTeamId = 102,
+            AwayTeamId = 101,
+            HomeTeamScore = 3,
+            AwayTeamScore = 1,
+            TicketPrice = 15,
+            Date = new DateTime(2025, 05, 20)
+        },
+        new Match
+        {
+            HomeTeamId = 103,
+            AwayTeamId = 106,
+            HomeTeamScore = 4,
+            AwayTeamScore = 2,
+            TicketPrice = 20,
+            Date = new DateTime(2025, 05, 18)
+        }
+    };
+
+    await context.AddRangeAsync(matches);
+    await context.SaveChangesAsync();
+}
+
+async Task GetTeamsWhereTicketPriceGreaterOrEqual20USDWithHomeTeamScoringGoalsAsync()
+{
+    var teams = await context.Teams
+        .Where(t => t.HomeMatches.Any(m => m.TicketPrice >= 20))
+        .Include(t => t.HomeMatches.Where(m => m.HomeTeamScore > 0))
+        .ThenInclude(m => m.AwayTeam)
+        .ToListAsync();
+
+    foreach (var team in teams)
+    {
+        Console.WriteLine($"{team.Name}");
+        foreach (var match in team.HomeMatches)
+        {
+            Console.WriteLine($"{match.HomeTeam.Name} - {match.HomeTeamScore} || {match.AwayTeam.Name} - {match.AwayTeamScore}");
         }
     }
 }
