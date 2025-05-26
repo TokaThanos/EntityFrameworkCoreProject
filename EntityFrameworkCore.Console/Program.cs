@@ -34,13 +34,14 @@ using FootballLeagueDbContext context = new FootballLeagueDbContext();
 // await ExecuteDelete();
 // await ExecuteUpdate();
 
-// await AddMatchAsync();
-// await AddTeamWithCoachAndLeagueAsync();
-// await AddLeagueWithTeamsAsync();
-// await EagerLoadLeaguesWithTeamsAndCoachesAsync();
-// await ExplicitLoadLeagueWithTeamsAndCoachAsync();
-// await AddMoreMatchesAsync();
-await GetTeamsWhereTicketPriceGreaterOrEqual20USDWithHomeTeamScoringGoalsAsync();
+// await AddMatch();
+// await AddTeamWithCoachAndLeague();
+// await AddLeagueWithTeams();
+// await EagerLoadLeaguesWithTeamsAndCoaches();
+// await ExplicitLoadLeagueWithTeamsAndCoach();
+// await AddMoreMatches();
+// await GetTeamsWhereTicketPriceGreaterOrEqual20USDWithHomeTeamScoringGoals();
+await GetTeamDetailsWithAdvancedProjection();
 
 #endregion
 
@@ -286,7 +287,7 @@ async Task ExecuteUpdate()
 #endregion
 
 #region Related Data
-async Task AddMatchAsync()
+async Task AddMatch()
 {
     var match = new Match
     {
@@ -300,7 +301,7 @@ async Task AddMatchAsync()
     await context.SaveChangesAsync();
 }
 
-async Task AddTeamWithCoachAndLeagueAsync()
+async Task AddTeamWithCoachAndLeague()
 {
     var league = await context.Leagues.FirstOrDefaultAsync(league => league.Name == "Serie A");
     var team = new Team
@@ -317,7 +318,7 @@ async Task AddTeamWithCoachAndLeagueAsync()
     await context.SaveChangesAsync();
 }
 
-async Task AddLeagueWithTeamsAsync()
+async Task AddLeagueWithTeams()
 {
     var league = new League
     {
@@ -355,7 +356,7 @@ async Task AddLeagueWithTeamsAsync()
     await context.SaveChangesAsync();
 }
 
-async Task EagerLoadLeaguesWithTeamsAndCoachesAsync()
+async Task EagerLoadLeaguesWithTeamsAndCoaches()
 {
     var leagues = await context.Leagues
         .Include(league => league.Teams)
@@ -372,7 +373,7 @@ async Task EagerLoadLeaguesWithTeamsAndCoachesAsync()
     }
 }
 
-async Task ExplicitLoadLeagueWithTeamsAndCoachAsync()
+async Task ExplicitLoadLeagueWithTeamsAndCoach()
 {
     var league = await context.FindAsync<League>(4);
 
@@ -401,7 +402,7 @@ async Task ExplicitLoadLeagueWithTeamsAndCoachAsync()
     }
 }
 
-async Task AddMoreMatchesAsync()
+async Task AddMoreMatches()
 {
     List<Match> matches = new List<Match>()
     {
@@ -483,7 +484,7 @@ async Task AddMoreMatchesAsync()
     await context.SaveChangesAsync();
 }
 
-async Task GetTeamsWhereTicketPriceGreaterOrEqual20USDWithHomeTeamScoringGoalsAsync()
+async Task GetTeamsWhereTicketPriceGreaterOrEqual20USDWithHomeTeamScoringGoals()
 {
     var teams = await context.Teams
         .Where(t => t.HomeMatches.Any(m => m.TicketPrice >= 20))
@@ -498,6 +499,29 @@ async Task GetTeamsWhereTicketPriceGreaterOrEqual20USDWithHomeTeamScoringGoalsAs
         {
             Console.WriteLine($"{match.HomeTeam.Name} - {match.HomeTeamScore} || {match.AwayTeam.Name} - {match.AwayTeamScore}");
         }
+    }
+}
+
+async Task GetTeamDetailsWithAdvancedProjection()
+{
+    var teamsInfo = await context.Teams
+        .Select(team => new TeamDetailsDTO
+        {
+            TeamName = team.Name,
+            CoachName = team.Coach.Name,
+            TotalHomeGoals = team.HomeMatches.Sum(match => match.HomeTeamScore),
+            TotalAwayGoals = team.AwayMatches.Sum(match => match.AwayTeamScore),
+        })
+        .ToListAsync();
+
+    foreach (var teamInfo in teamsInfo)
+    {
+        int goalsScored = teamInfo.TotalHomeGoals + teamInfo.TotalAwayGoals;
+
+        Console.WriteLine($"Team: {teamInfo.TeamName} | " +
+            $"Coach: {teamInfo.CoachName} | " +
+            $"HomeGoals: {teamInfo.TotalHomeGoals} | " +
+            $"AwayGoals: {teamInfo.TotalAwayGoals}");
     }
 }
 
