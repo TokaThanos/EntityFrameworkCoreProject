@@ -7,46 +7,46 @@ using FootballLeagueDbContext context = new FootballLeagueDbContext();
 // await context.Database.MigrateAsync();
 
 #region Method Calls
-// await GetAllTeams();
-// await GetOneTeam();
-// await GetMoreThanOneTeam();
-// await AggregateMethods();
-// await GroupByMethod();
-// await OrderByMethod();
-// await SkipAndTake();
-// await GroupByWithProjection();
+// await GetAllTeamsAsync();
+// await GetOneTeamAsync();
+// await GetMoreThanOneTeamAsync();
+// await AggregateMethodsAsync();
+// await GroupByMethodAsync();
+// await OrderByMethodAsync();
+// await SkipAndTakeAsync();
+// await GroupByWithProjectionAsync();
 
 // Console.WriteLine("Enter 0 or 1 to test");
 // int option = Convert.ToInt32(Console.ReadLine());
 // Console.WriteLine("Enter true or false for query optimization");
 // bool optimizationCheck = Convert.ToBoolean(Console.ReadLine());
 
-// await PerformanceHackWithIQueryable(option, optimizationCheck);
+// await PerformanceHackWithIQueryableAsync(option, optimizationCheck);
 
-// await AddNewCoach();
-// await AddNewCoaches();
+// await AddNewCoachAsync();
+// await AddNewCoachesAsync();
 
-// await UpdateCoach();
-// await UpdateCoachWithNoTracking();
+// await UpdateCoachAsync();
+// await UpdateCoachWithNoTrackingAsync();
 
-// await DeleteCoach();
+// await DeleteCoachAsync();
 
-// await ExecuteDelete();
-// await ExecuteUpdate();
+// await ExecuteDeleteAsync();
+// await ExecuteUpdateAsync();
 
-// await AddMatch();
-// await AddTeamWithCoachAndLeague();
-// await AddLeagueWithTeams();
-// await EagerLoadLeaguesWithTeamsAndCoaches();
-// await ExplicitLoadLeagueWithTeamsAndCoach();
-// await AddMoreMatches();
-// await GetTeamsWhereTicketPriceGreaterOrEqual20USDWithHomeTeamScoringGoals();
-await GetTeamDetailsWithAdvancedProjection();
+// await AddMatchAsync();
+// await AddTeamWithCoachAndLeagueAsync();
+// await AddLeagueWithTeamsAsync();
+// await EagerLoadLeaguesWithTeamsAndCoachesAsync();
+// await ExplicitLoadLeagueWithTeamsAndCoachAsync();
+// await AddMoreMatchesAsync();
+// await GetTeamsWhereTicketPriceGreaterOrEqual20USDWithHomeTeamScoringGoalsAsync();
+await GetTeamDetailsWithAdvancedProjectionAsync();
 
 #endregion
 
 #region Read Queries
-async Task GetAllTeams()
+async Task GetAllTeamsAsync()
 {
     var teams = await context.Teams
         .Select(team => new { team.Name, team.CreatedDate }).Take(5)
@@ -58,7 +58,7 @@ async Task GetAllTeams()
     }
 }
 
-async Task GetOneTeam()
+async Task GetOneTeamAsync()
 {
     // Selects a single record - first one in the list that meets a condition or default value in case of condition is not met
     var team = await context.Teams.FirstOrDefaultAsync(team => team.Id > 1);
@@ -67,7 +67,7 @@ async Task GetOneTeam()
     var teamBasedOnPKey = await context.Teams.FindAsync(2);
 }
 
-async Task GetMoreThanOneTeam()
+async Task GetMoreThanOneTeamAsync()
 {
     var filteredTeams = await context.Teams.Where(team => team.Id > 1).ToListAsync();
     foreach (var team in filteredTeams)
@@ -82,7 +82,7 @@ async Task GetMoreThanOneTeam()
     }
 }
 
-async Task AggregateMethods()
+async Task AggregateMethodsAsync()
 {
     // count
     var teamCount = await context.Teams.CountAsync();
@@ -98,7 +98,7 @@ async Task AggregateMethods()
     Console.WriteLine($"{teamCount}, {maxTeamId}, {minTeamId}, {avg}, {sum}");
 }
 
-async Task GroupByMethod()
+async Task GroupByMethodAsync()
 {
     var groupedTeams = context.Teams
         // .Where(team => team.Id > 1) // this is used as where clause
@@ -116,13 +116,13 @@ async Task GroupByMethod()
     }
 }
 
-async Task OrderByMethod()
+async Task OrderByMethodAsync()
 {
     var team = await context.Teams.OrderByDescending(team => team.Name).FirstOrDefaultAsync();
     Console.WriteLine(team.Name);
 }
 
-async Task SkipAndTake()
+async Task SkipAndTakeAsync()
 {
     var recordCount = 3;
     var page = 0;
@@ -142,7 +142,7 @@ async Task SkipAndTake()
     }
 }
 
-async Task GroupByWithProjection()
+async Task GroupByWithProjectionAsync()
 {
     var teams = await context.Teams
         .Select(team =>  new TeamInfoDTO { CreatedDate = team.CreatedDate, TeamName = team.Name }).ToListAsync();
@@ -154,7 +154,7 @@ async Task GroupByWithProjection()
 }
 
 // List vs IQueryable - Performance Hack for EF Core
-async Task PerformanceHackWithIQueryable(int choice, bool queryOptimizationCheck)
+async Task PerformanceHackWithIQueryableAsync(int choice, bool queryOptimizationCheck)
 {
     List<Team> teamsList = new List<Team>();
     // List
@@ -204,7 +204,7 @@ async Task PerformanceHackWithIQueryable(int choice, bool queryOptimizationCheck
 #endregion
 
 #region Write Queries
-async Task AddNewCoach()
+async Task AddNewCoachAsync()
 {
     var newCoach = new Coach
     {
@@ -215,7 +215,7 @@ async Task AddNewCoach()
     await context.SaveChangesAsync();
 }
 
-async Task AddNewCoaches()
+async Task AddNewCoachesAsync()
 {
     List<Coach> newCoaches = new List<Coach>()
     {
@@ -234,14 +234,14 @@ async Task AddNewCoaches()
     await context.SaveChangesAsync();
 }
 
-async Task UpdateCoach()
+async Task UpdateCoachAsync()
 {
     var coach = await context.Coaches.FindAsync(1);
     coach.Name = "Luis Enrique";
     await context.SaveChangesAsync();
 }
 
-async Task UpdateCoachWithNoTracking()
+async Task UpdateCoachWithNoTrackingAsync()
 {
     var coach = await context.Coaches
         .AsNoTracking()
@@ -259,21 +259,21 @@ async Task UpdateCoachWithNoTracking()
     await context.SaveChangesAsync();
 }
 
-async Task DeleteCoach()
+async Task DeleteCoachAsync()
 {
     var coach = await context.Coaches.FindAsync(1);
     context.Remove(coach);
     await context.SaveChangesAsync();
 }
 
-async Task ExecuteDelete()
+async Task ExecuteDeleteAsync()
 {
     // Always executed directly in SQL, and do not require EF Core to track the entities.
     // automatically savechanges is called once executed
     await context.Coaches.Where(coach => coach.Name == "Jose Mourinho").ExecuteDeleteAsync();
 }
 
-async Task ExecuteUpdate()
+async Task ExecuteUpdateAsync()
 {
     // Always executed directly in SQL, and do not require EF Core to track the entities.
     // automatically savechanges is called once executed
@@ -287,7 +287,7 @@ async Task ExecuteUpdate()
 #endregion
 
 #region Related Data
-async Task AddMatch()
+async Task AddMatchAsync()
 {
     var match = new Match
     {
@@ -301,7 +301,7 @@ async Task AddMatch()
     await context.SaveChangesAsync();
 }
 
-async Task AddTeamWithCoachAndLeague()
+async Task AddTeamWithCoachAndLeagueAsync()
 {
     var league = await context.Leagues.FirstOrDefaultAsync(league => league.Name == "Serie A");
     var team = new Team
@@ -318,7 +318,7 @@ async Task AddTeamWithCoachAndLeague()
     await context.SaveChangesAsync();
 }
 
-async Task AddLeagueWithTeams()
+async Task AddLeagueWithTeamsAsync()
 {
     var league = new League
     {
@@ -356,7 +356,7 @@ async Task AddLeagueWithTeams()
     await context.SaveChangesAsync();
 }
 
-async Task EagerLoadLeaguesWithTeamsAndCoaches()
+async Task EagerLoadLeaguesWithTeamsAndCoachesAsync()
 {
     var leagues = await context.Leagues
         .Include(league => league.Teams)
@@ -373,7 +373,7 @@ async Task EagerLoadLeaguesWithTeamsAndCoaches()
     }
 }
 
-async Task ExplicitLoadLeagueWithTeamsAndCoach()
+async Task ExplicitLoadLeagueWithTeamsAndCoachAsync()
 {
     var league = await context.FindAsync<League>(4);
 
@@ -402,7 +402,7 @@ async Task ExplicitLoadLeagueWithTeamsAndCoach()
     }
 }
 
-async Task AddMoreMatches()
+async Task AddMoreMatchesAsync()
 {
     List<Match> matches = new List<Match>()
     {
@@ -484,7 +484,7 @@ async Task AddMoreMatches()
     await context.SaveChangesAsync();
 }
 
-async Task GetTeamsWhereTicketPriceGreaterOrEqual20USDWithHomeTeamScoringGoals()
+async Task GetTeamsWhereTicketPriceGreaterOrEqual20USDWithHomeTeamScoringGoalsAsync()
 {
     var teams = await context.Teams
         .Where(t => t.HomeMatches.Any(m => m.TicketPrice >= 20))
@@ -502,7 +502,7 @@ async Task GetTeamsWhereTicketPriceGreaterOrEqual20USDWithHomeTeamScoringGoals()
     }
 }
 
-async Task GetTeamDetailsWithAdvancedProjection()
+async Task GetTeamDetailsWithAdvancedProjectionAsync()
 {
     var teamsInfo = await context.Teams
         .Select(team => new TeamDetailsDTO
