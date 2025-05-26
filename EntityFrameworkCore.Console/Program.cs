@@ -516,8 +516,6 @@ async Task GetTeamDetailsWithAdvancedProjectionAsync()
 
     foreach (var teamInfo in teamsInfo)
     {
-        int goalsScored = teamInfo.TotalHomeGoals + teamInfo.TotalAwayGoals;
-
         Console.WriteLine($"Team: {teamInfo.TeamName} | " +
             $"Coach: {teamInfo.CoachName} | " +
             $"HomeGoals: {teamInfo.TotalHomeGoals} | " +
