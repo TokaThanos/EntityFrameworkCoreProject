@@ -1,6 +1,6 @@
 ﻿using EntityFrameworkCore.Console;
 using EntityFrameworkCore.Data;
-using EntityFrameworkCore.Data.Utility;
+using EntityFrameworkCore.Console.Utility;
 using EntityFrameworkCore.Domain;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
