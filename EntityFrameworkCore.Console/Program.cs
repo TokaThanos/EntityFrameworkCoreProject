@@ -1,6 +1,7 @@
 ﻿using EntityFrameworkCore.Console;
 using EntityFrameworkCore.Data;
 using EntityFrameworkCore.Domain;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 using FootballLeagueDbContext context = new FootballLeagueDbContext();
@@ -41,7 +42,11 @@ using FootballLeagueDbContext context = new FootballLeagueDbContext();
 // await ExplicitLoadLeagueWithTeamsAndCoachAsync();
 // await AddMoreMatchesAsync();
 // await GetTeamsWhereTicketPriceGreaterOrEqual20USDWithHomeTeamScoringGoalsAsync();
-await GetTeamDetailsWithAdvancedProjectionAsync();
+// await GetTeamDetailsWithAdvancedProjectionAsync();
+
+// await TeamsAndLeaguesView();
+// await UsingSqlRaw();
+await UsingSqlInterpolated();
 
 #endregion
 
@@ -525,3 +530,31 @@ async Task GetTeamDetailsWithAdvancedProjectionAsync()
 
 #endregion
 
+#region Raw SQL
+async Task TeamsAndLeaguesView()
+{
+    var details = await context.TeamsAndLeaguesView.ToListAsync();
+    foreach (var item in details)
+    {
+        Console.WriteLine($"Team Name - {item.TeamName} | League Name - {item.LeagueName}");
+    }
+}
+
+async Task UsingSqlRaw()
+{
+    Console.WriteLine("Search Team: ");
+    var name = Console.ReadLine();
+    var param = new SqlParameter("teamName", name); // Always parameterize input while using FromSqlRaw to prevent sql injection
+    var team = await context.Teams.FromSqlRaw($"SELECT * FROM Teams WHERE name = @teamName", param).FirstOrDefaultAsync();
+    Console.WriteLine($"{team?.Name}");
+}
+
+async Task UsingSqlInterpolated()
+{
+    Console.WriteLine("Search Team: ");
+    var name = Console.ReadLine();  // FromSqlInterpolated method Automatically parameterizes the input 
+    var team = await context.Teams.FromSqlInterpolated($"SELECT * FROM Teams WHERE name = {name}").FirstOrDefaultAsync();
+    Console.WriteLine($"{team?.Name}");
+}
+
+#endregion
