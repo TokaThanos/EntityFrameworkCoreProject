@@ -1,9 +1,11 @@
 ﻿using EntityFrameworkCore.Console;
 using EntityFrameworkCore.Data;
+using EntityFrameworkCore.Data.Utility;
 using EntityFrameworkCore.Domain;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
+EnvironmentVariableUtility.LoadEnv();
 using FootballLeagueDbContext context = new FootballLeagueDbContext();
 // await context.Database.MigrateAsync();
 

@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace EntityFrameworkCore.Data.Utility
 {
     internal class EnvironmentVariableUtility
