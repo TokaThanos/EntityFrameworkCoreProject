@@ -422,7 +422,7 @@ async Task AddMoreMatchesAsync()
         },
         new Match
         {
-            HomeTeamId = 108,
+            HomeTeamId = 107,
             AwayTeamId = 106,
             HomeTeamScore = 1,
             AwayTeamScore = 0,
@@ -450,7 +450,7 @@ async Task AddMoreMatchesAsync()
         new Match
         {
             HomeTeamId = 107,
-            AwayTeamId = 108,
+            AwayTeamId = 103,
             HomeTeamScore = 0,
             AwayTeamScore = 0,
             TicketPrice = 17,
