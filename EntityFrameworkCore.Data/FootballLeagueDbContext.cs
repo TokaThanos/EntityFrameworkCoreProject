@@ -17,7 +17,9 @@ public class FootballLeagueDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
+        var password = Environment.GetEnvironmentVariable("DB_PASSWORD")
+            ?? throw new InvalidOperationException("Environment variable DB_PASSWORD is not set.");
+
         optionsBuilder.UseSqlServer($"Server=localhost,1433;Database=FootballLeague_EfCore;User Id=sa;Password={password};TrustServerCertificate=True;")
             .LogTo(Console.WriteLine, LogLevel.Information)
             .EnableSensitiveDataLogging()
