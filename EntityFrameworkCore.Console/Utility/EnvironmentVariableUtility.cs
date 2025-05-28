@@ -1,24 +1,22 @@
 using System.IO;
 
-namespace EntityFrameworkCore.Data.Utility
+namespace EntityFrameworkCore.Console.Utility;
+internal class EnvironmentVariableUtility
 {
-    internal class EnvironmentVariableUtility
+    public static void LoadEnv()
     {
-        public static void LoadEnv()
-        {
-            var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
+        var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
 
-            while (dir != null)
+        while (dir != null)
+        {
+            var envPath = Path.Combine(dir.FullName, ".env");
+            if (File.Exists(envPath))
             {
-                var envPath = Path.Combine(dir.FullName, ".env");
-                if (File.Exists(envPath))
-                {
-                    DotNetEnv.Env.Load(envPath);
-                    return;
-                }
-                dir = dir.Parent;
+                DotNetEnv.Env.Load(envPath);
+                return;
             }
-            throw new FileNotFoundException($".env file not found in any parent directory.");
+            dir = dir.Parent;
         }
+        throw new FileNotFoundException($".env file not found in any parent directory.");
     }
 }
