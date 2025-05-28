@@ -2,7 +2,7 @@
 
 ![ERD Diagram](images/erd.png)
 
-This solution demonstrates a football league management system using Entity Framework Core with a SQL Server backend. It includes projects for the domain models, data access, and a console application for running queries and commands.
+This solution demonstrates a football league management system using Entity Framework Core with a SQL Server backend. It includes projects for the domain models, data access, and a console application to interact with the database.
 
 ## Project Structure
 
@@ -18,26 +18,18 @@ This solution demonstrates a football league management system using Entity Fram
 
 ## Setting Up the Environment
 
-### 1. Set the SQL Server SA Password
+### 1. Set the SQL Server SA Password with a .env File
 
-The Docker Compose file expects an environment variable `DB_PASSWORD` for the SQL Server `sa` user.
+The project now uses a `.env` file to provide environment variables, including the SQL Server `sa` user password.
 
-**On Windows (Command Prompt):**
-```sh
-set DB_PASSWORD=YourStrong!Passw0rd
-```
+1. Create a file named `.env` in the root of your project.
+2. Add the following line, replacing `YourStrong!Passw0rd` with your desired password:
+   ```
+   DB_PASSWORD=YourStrong!Passw0rd
+   ```
+3. The Docker Compose setup and the application will automatically use this variable.
 
-**On PowerShell:**
-```sh
-$env:DB_PASSWORD="YourStrong!Passw0rd"
-```
-
-**On Linux/macOS:**
-```sh
-export DB_PASSWORD=YourStrong!Passw0rd
-```
-
-> **Note:** Replace `YourStrong!Passw0rd` with a secure password of your choice.
+> **Note:** Do not commit your actual `.env` file with sensitive information to version control.
 
 ### 2. Start SQL Server with Docker Compose
 
@@ -49,18 +41,24 @@ docker compose up -d
 
 This will start a SQL Server instance on port 1433.
 
-### 3. Apply Entity Framework Core Migrations
+### 3. Apply and List Entity Framework Core Migrations
 
-Navigate to the solution root (where the `.sln` file is located), and run the following command to apply migrations:
+Navigate to the solution root (where the `.sln` file is located), and use the following commands:
 
-```sh
-dotnet ef database update --project EntityFrameworkCore.Data --startup-project EntityFrameworkCore.Console
-```
+- **Apply Migrations:**  
+  This command will create the database and apply all migrations from the `Migrations` folder:
+  ```sh
+  dotnet ef database update --project EntityFrameworkCore.Data --startup-project EntityFrameworkCore.Console
+  ```
+
+- **List Available Migrations:**  
+  This command will show all migrations that have been added to your project:
+  ```sh
+  dotnet ef migrations list --project EntityFrameworkCore.Data --startup-project EntityFrameworkCore.Console
+  ```
 
 - `--project EntityFrameworkCore.Data` specifies the project containing your `DbContext` and migrations.
 - `--startup-project EntityFrameworkCore.Console` specifies the executable project that configures your services and entry point.
-
-This will create the database and apply all migrations from the `Migrations` folder.
 
 > **Tip:** If you need to install the EF Core CLI tools, run:
 > ```sh
@@ -86,12 +84,12 @@ This will execute the main program, which includes various EF Core queries and c
   ```
 - **Stop the SQL Server container:**
   ```sh
-  docker compose down
+  docker compose stop
   ```
 
 ## Migrations
 
-All migration files are located in [`EntityFrameworkCore.Data/Migrations`](EntityFrameworkCore.Data/Migrations). You can add new migrations from root folder using:
+All migration files are located in [`EntityFrameworkCore.Data/Migrations`](EntityFrameworkCore.Data/Migrations). You can add new migrations from the root folder using:
 
 ```sh
 dotnet ef migrations add MigrationName --project EntityFrameworkCore.Data --startup-project EntityFrameworkCore.Console
