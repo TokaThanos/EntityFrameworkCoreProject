@@ -1,6 +1,6 @@
 namespace EntityFrameworkCore.Data.Utility
 {
-    internal class EnviromentVariableUtility
+    internal class EnvironmentVariableUtility
     {
         public static void LoadEnv()
         {

@@ -18,7 +18,7 @@ public class FootballLeagueDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        EnviromentVariableUtility.LoadEnv();
+        EnvironmentVariableUtility.LoadEnv();
 
         var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
         optionsBuilder.UseSqlServer($"Server=localhost,1433;Database=FootballLeague_EfCore;User Id=sa;Password={password};TrustServerCertificate=True;")
