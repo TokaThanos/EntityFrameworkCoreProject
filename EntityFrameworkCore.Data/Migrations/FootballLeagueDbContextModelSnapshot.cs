@@ -241,6 +241,19 @@ namespace EntityFrameworkCore.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("EntityFrameworkCore.Domain.TeamsAndLeaguesView", b =>
+                {
+                    b.Property<string>("LeagueName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TeamName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("vw_TeamsAndLeagues", (string)null);
+                });
+
             modelBuilder.Entity("EntityFrameworkCore.Domain.Match", b =>
                 {
                     b.HasOne("EntityFrameworkCore.Domain.Team", "AwayTeam")
