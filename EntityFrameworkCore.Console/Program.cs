@@ -1,11 +1,9 @@
 ﻿using EntityFrameworkCore.Console;
 using EntityFrameworkCore.Data;
-using EntityFrameworkCore.Console.Utility;
 using EntityFrameworkCore.Domain;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
-EnvironmentVariableUtility.LoadEnv();
 using FootballLeagueDbContext context = new FootballLeagueDbContext();
 // await context.Database.MigrateAsync();
 
@@ -48,7 +46,9 @@ using FootballLeagueDbContext context = new FootballLeagueDbContext();
 
 // await TeamsAndLeaguesView();
 // await UsingSqlRaw();
-await UsingSqlInterpolated();
+// await UsingSqlInterpolated();
+// await RawSqlWithLINQ();
+await ExecStoredProcedure();
 
 #endregion
 
@@ -557,6 +557,29 @@ async Task UsingSqlInterpolated()
     var name = Console.ReadLine();  // FromSqlInterpolated method Automatically parameterizes the input 
     var team = await context.Teams.FromSqlInterpolated($"SELECT * FROM Teams WHERE name = {name}").FirstOrDefaultAsync();
     Console.WriteLine($"{team?.Name}");
+}
+
+async Task RawSqlWithLINQ()
+{
+    var team = await context.Teams.FromSqlInterpolated($"SELECT * FROM Teams")
+        .Where(team => team.Name == "Manchester United")
+        .Include(team => team.Coach)
+        .FirstOrDefaultAsync();
+    Console.WriteLine($"Coach of {team?.Name} is {team?.Coach.Name}");
+}
+
+async Task ExecStoredProcedure()
+{
+    var league = await context.Leagues.FirstOrDefaultAsync(league => league.Name == "Bundesliga");
+
+    var teamsAndLeague = await context.TeamsAndLeaguesView
+        .FromSqlInterpolated($"EXEC dbo.GetTeamsFromLeague @LeagueId={league?.Id}")
+        .ToListAsync();
+
+    foreach (var item in teamsAndLeague)
+    {
+        Console.WriteLine($"{item.TeamName} from {item.LeagueName}");
+    }
 }
 
 #endregion
