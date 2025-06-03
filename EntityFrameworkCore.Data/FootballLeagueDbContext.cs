@@ -35,5 +35,9 @@ public class FootballLeagueDbContext : DbContext
         // modelBuilder.ApplyConfiguration(new TeamConfiguration);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         modelBuilder.Entity<TeamsAndLeaguesView>().HasNoKey().ToView("vw_TeamsAndLeagues");
+        modelBuilder
+            .HasDbFunction(typeof(UserDefinedFunctions)
+            .GetMethod(nameof(UserDefinedFunctions.GetCoachNameByTeamId)))
+            .HasName("fn_GetCoachNameByTeamId");
     }
 }
