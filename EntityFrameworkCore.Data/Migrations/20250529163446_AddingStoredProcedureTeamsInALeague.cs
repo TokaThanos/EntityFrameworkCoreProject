@@ -11,7 +11,7 @@ namespace EntityFrameworkCore.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-                CREATE PROCEDURE GetTeamsFromLeague
+                CREATE PROCEDURE sp_GetTeamsFromLeague
                 @LeagueId INT
                 AS
                 BEGIN
@@ -27,7 +27,7 @@ namespace EntityFrameworkCore.Data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"DROP PROCEDURE IF EXISTS GetTeamsFromLeague;");
+            migrationBuilder.Sql(@"DROP PROCEDURE IF EXISTS sp_GetTeamsFromLeague;");
         }
     }
 }

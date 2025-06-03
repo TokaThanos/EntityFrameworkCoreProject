@@ -1,5 +1,6 @@
 ﻿using EntityFrameworkCore.Console;
 using EntityFrameworkCore.Data;
+using EntityFrameworkCore.Data.Utility;
 using EntityFrameworkCore.Domain;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -48,7 +49,9 @@ using FootballLeagueDbContext context = new FootballLeagueDbContext();
 // await UsingSqlRaw();
 // await UsingSqlInterpolated();
 // await RawSqlWithLINQ();
-await ExecStoredProcedure();
+// await ExecuteNonQueryStatementUsingRawSql();
+// await ExecuteStoredProcedureUsingScalarOrNonEntityType();
+await ExecuteUserDefinedFunction();
 
 #endregion
 
@@ -568,18 +571,42 @@ async Task RawSqlWithLINQ()
     Console.WriteLine($"Coach of {team?.Name} is {team?.Coach.Name}");
 }
 
-async Task ExecStoredProcedure()
+async Task ExecuteNonQueryStatementUsingRawSql()
+{
+    var leagueName = "Ligue 1";
+    var createdDate = DateTime.Now;
+    await context.Database.ExecuteSqlInterpolatedAsync($@"
+        INSERT INTO Leagues (Name, CreatedDate, ModifiedDate)  
+        VALUES ({leagueName}, {createdDate}, {createdDate})"
+    );
+}
+
+async Task ExecuteStoredProcedureUsingScalarOrNonEntityType()
 {
     var league = await context.Leagues.FirstOrDefaultAsync(league => league.Name == "Bundesliga");
 
-    var teamsAndLeague = await context.TeamsAndLeaguesView
-        .FromSqlInterpolated($"EXEC dbo.GetTeamsFromLeague @LeagueId={league?.Id}")
-        .ToListAsync();
+    var teamsAndLeague = await context.Database.SqlQuery<TeamLeagueDTO>($@"
+        EXEC dbo.sp_GetTeamsFromLeague @LeagueId={league?.Id}
+    ").ToListAsync();
 
     foreach (var item in teamsAndLeague)
     {
         Console.WriteLine($"{item.TeamName} from {item.LeagueName}");
     }
+}
+
+async Task ExecuteUserDefinedFunction()
+{
+    var result = await context.Teams
+        .Where(team => team.Id == 101)
+        .Select(team => new
+        {
+            TeamName = team.Name,
+            CoachName = UserDefinedFunctions.GetCoachNameByTeamId(team.Id) // Must use this function inside a LINQ query or it will throw not implemented error
+        })
+        .FirstOrDefaultAsync();
+    
+    Console.WriteLine($"{result?.TeamName} -> {result?.CoachName}");
 }
 
 #endregion
