@@ -10,6 +10,12 @@ namespace EntityFrameworkCore.Data;
 
 public class FootballLeagueDbContext : DbContext
 {
+    public FootballLeagueDbContext() { }
+
+    public FootballLeagueDbContext(DbContextOptions<FootballLeagueDbContext> options) : base(options)
+    {
+        
+    }
     public DbSet<Team> Teams { get; set; }
     public DbSet<Coach> Coaches { get; set; }
     public DbSet<League> Leagues { get; set; }
