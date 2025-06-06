@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.Data;
 using EntityFrameworkCore.Domain;
+using EntityFrameworkCore.Api.DTOs;
 
 namespace EntityFrameworkCore.Api.Controllers
 {
@@ -23,16 +24,32 @@ namespace EntityFrameworkCore.Api.Controllers
 
         // GET: api/Teams
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Team>>> GetTeams()
+        public async Task<ActionResult<IEnumerable<TeamsReadDto>>> GetTeams()
         {
-            return await _context.Teams.ToListAsync();
+            var teams = await _context.Teams
+                .Select(team => new TeamsReadDto
+                {
+                    Id = team.Id,
+                    Name = team.Name
+                })
+                .ToListAsync();
+
+            return teams;
         }
 
         // GET: api/Teams/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Team>> GetTeam(int id)
+        public async Task<ActionResult<TeamReadDto>> GetTeam(int id)
         {
-            var team = await _context.Teams.FindAsync(id);
+            var team = await _context.Teams
+                .Where(team => team.Id == id)
+                .Select(team => new TeamReadDto
+                {
+                    Name = team.Name,
+                    CoachName = team.Coach.Name,
+                    LeagueName = team.League.Name
+                })
+                .FirstOrDefaultAsync();
 
             if (team == null)
             {
@@ -88,14 +105,7 @@ namespace EntityFrameworkCore.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTeam(int id)
         {
-            var team = await _context.Teams.FindAsync(id);
-            if (team == null)
-            {
-                return NotFound();
-            }
-
-            _context.Teams.Remove(team);
-            await _context.SaveChangesAsync();
+            await _context.Teams.Where(team => team.Id == id).ExecuteDeleteAsync();
 
             return NoContent();
         }
