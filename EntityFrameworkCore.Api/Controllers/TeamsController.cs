@@ -30,7 +30,7 @@ namespace EntityFrameworkCore.Api.Controllers
 
         // GET: api/Teams/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TeamCreateDto>> GetTeam(int id)
+        public async Task<ActionResult<TeamReadInfoDto>> GetTeam(int id)
         {
             var team = await _teamService.GetTeamByIdAsync(id);
 

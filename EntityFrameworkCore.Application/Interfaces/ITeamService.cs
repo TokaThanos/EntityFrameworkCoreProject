@@ -11,7 +11,7 @@ namespace EntityFrameworkCore.Application.Interfaces
     public interface ITeamService
     {
         Task<IEnumerable<TeamReadDto>> GetAllTeamsAsync();
-        Task<TeamCreateDto> GetTeamByIdAsync(int id);
+        Task<TeamReadInfoDto> GetTeamByIdAsync(int id);
         Task DeleteTeamByIdAsync(int id);
         Task<TeamReadDto> AddTeamAsync(TeamCreateDto team);
         Task UpdateTeamAsync(int id, TeamCreateDto team);
