@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EntityFrameworkCore.Data\EntityFrameworkCore.Data.csproj" />
+    <ProjectReference Include="..\EntityFrameworkCore.Application\EntityFrameworkCore.Application.csproj" />
   </ItemGroup>
 
 </Project>
