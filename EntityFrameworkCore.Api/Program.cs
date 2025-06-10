@@ -1,3 +1,5 @@
+using EntityFrameworkCore.Application.Interfaces;
+using EntityFrameworkCore.Application.Services;
 using EntityFrameworkCore.Data;
 using EntityFrameworkCore.Data.Utility;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +36,8 @@ builder.Services.AddDbContext<FootballLeagueDbContext>(options =>
         .EnableDetailedErrors();
     }
 });
+
+builder.Services.AddScoped<ITeamService, TeamService>();
 
 var app = builder.Build();
 
