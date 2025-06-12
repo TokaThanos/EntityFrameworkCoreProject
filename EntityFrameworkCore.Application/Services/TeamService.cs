@@ -54,10 +54,12 @@ namespace EntityFrameworkCore.Application.Services
 
         public async Task<TeamReadDto> AddTeamAsync(TeamCreateDto teamCreateDto)
         {
-            if (string.IsNullOrWhiteSpace(teamCreateDto.TeamName))
+            if (string.IsNullOrWhiteSpace(teamCreateDto.TeamName) || 
+                string.IsNullOrWhiteSpace(teamCreateDto.CoachName))
             {
-                throw new ArgumentException("Team Name can't be null");
+                throw new ArgumentException("Team Name or coach name can't be null");
             }
+
             var coach = await _context.Coaches
                 .FirstOrDefaultAsync(coach => coach.Name!.ToLower() == teamCreateDto.CoachName.ToLower());
 
