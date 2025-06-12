@@ -26,13 +26,14 @@ namespace EntityFrameworkCore.Api.Tests.Controllers
         public async Task TeamsController_GetTeams_ReturnsOk()
         {
             // Arrange
-            var expectedTeams = new List<TeamReadDto>
+            var expectedOutput = new List<TeamReadDto>
             {
                 new TeamReadDto { Id = 1, Name = "Team A" },
                 new TeamReadDto { Id = 2, Name = "Team B" }
             };
+
             _teamServiceMock.Setup(service => service.GetAllTeamsAsync())
-                .ReturnsAsync(expectedTeams);
+                .ReturnsAsync(expectedOutput);
 
             // Act
             var result = await _teamsController.GetTeams();
@@ -53,9 +54,10 @@ namespace EntityFrameworkCore.Api.Tests.Controllers
         public async Task TeamsController_GetTeam_ReturnsExpectedResult(int id)
         {
             // Arrange
-            var expectedTeam = id > 0 ? new TeamReadInfoDto { TeamName = "Team", CoachName = "Coach" } : null;
+            var expectedOutput = id > 0 ? new TeamReadInfoDto { TeamName = "Team", CoachName = "Coach" } : null;
+
             _teamServiceMock.Setup(service => service.GetTeamByIdAsync(id))
-                .ReturnsAsync(expectedTeam);
+                .ReturnsAsync(expectedOutput);
 
             // Act
             var result = await _teamsController.GetTeam(id);
@@ -71,6 +73,36 @@ namespace EntityFrameworkCore.Api.Tests.Controllers
             {
                 result.Result.Should().BeOfType<NotFoundResult>();
             }
+        }
+
+        [Fact]
+        public async Task TeamsController_PostTeam_ReturnsExpectedResult()
+        {
+            // Arrange
+            var requestInput = new TeamCreateDto
+            {
+                TeamName = "Test Team",
+                CoachName = "Test Coach",
+                LeagueName = "Test League"
+            };
+
+            var expectedOutput = new TeamReadDto
+            {
+                Id = 1,
+                Name = "Test Team"
+            };
+
+            _teamServiceMock.Setup(service => service.AddTeamAsync(requestInput))
+                .ReturnsAsync(expectedOutput);
+
+            // Act
+            var result = await _teamsController.PostTeam(requestInput);
+
+            // Assert
+            var createdAtActionResult = result.Result as CreatedAtActionResult;
+            createdAtActionResult.Should().NotBeNull();
+            createdAtActionResult.ActionName.Should().Be(nameof(_teamsController.GetTeam));
+            createdAtActionResult.Value.Should().BeEquivalentTo(expectedOutput);
         }
     }
 }
