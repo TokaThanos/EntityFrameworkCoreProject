@@ -8,6 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using FootballLeagueDbContext context = new FootballLeagueDbContext();
 // await context.Database.MigrateAsync();
 
+#region Tips
+/*
+Between Projection (select) and eager loading (include) projection is leaner and faster, while eager loading loads more data to memory.
+Use .Include() when you truly need full related entities in memory (modifying, deep navigation, etc).
+Use projections when building APIs, lists, or dashboards which are read only — it’s faster and cleaner.
+*/
+#endregion
+
 #region Method Calls
 // await GetAllTeamsAsync();
 // await GetOneTeamAsync();

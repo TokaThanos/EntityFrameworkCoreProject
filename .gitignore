@@ -11,7 +11,7 @@ obj/
 *.exe
 *.pdb
 *.dll.config
-*.json
+# *.json
 *.log
 *.env
 *.db
