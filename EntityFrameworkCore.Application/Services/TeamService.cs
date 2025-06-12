@@ -1,4 +1,4 @@
-﻿using EntityFrameworkCore.Application.Dtos;
+using EntityFrameworkCore.Application.Dtos;
 using EntityFrameworkCore.Application.Interfaces;
 using EntityFrameworkCore.Data;
 using EntityFrameworkCore.Domain;
