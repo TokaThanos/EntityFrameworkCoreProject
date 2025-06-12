@@ -29,7 +29,7 @@ public class FootballLeagueDbContext : DbContext
             ?? throw new InvalidOperationException("Environment variable DB_PASSWORD is not set.");
 
         optionsBuilder.UseSqlServer($"Server=localhost,1433;Database=FootballLeague_EfCore;User Id=sa;Password={password};TrustServerCertificate=True;")
-            .LogTo(Console.WriteLine, LogLevel.Information)
+            //.LogTo(Console.WriteLine, LogLevel.Information)
             .EnableSensitiveDataLogging()
             .EnableDetailedErrors();
         optionsBuilder.ConfigureWarnings(warings =>
