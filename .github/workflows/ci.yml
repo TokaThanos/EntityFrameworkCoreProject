@@ -5,11 +5,13 @@ name: .NET CI
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "feature/**" ]
+  push:
+    branches: [ "feature/**" ]
 
 jobs:
   build:
-
+    name: build-and-test
     runs-on: ubuntu-latest
 
     steps:
