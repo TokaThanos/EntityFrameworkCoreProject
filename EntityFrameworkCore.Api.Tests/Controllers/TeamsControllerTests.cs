@@ -23,7 +23,7 @@ namespace EntityFrameworkCore.Api.Tests.Controllers
             _teamsController = new TeamsController(_teamServiceMock.Object);
         }
         [Fact]
-        public async Task TeamsController_GetTeams_ReturnsOk()
+        public async Task TeamsController_GetTeams_ReturnsExpectedResult()
         {
             // Arrange
             var expectedOutput = new List<TeamReadDto>
@@ -103,6 +103,46 @@ namespace EntityFrameworkCore.Api.Tests.Controllers
             createdAtActionResult.Should().NotBeNull();
             createdAtActionResult.ActionName.Should().Be(nameof(_teamsController.GetTeam));
             createdAtActionResult.Value.Should().BeEquivalentTo(expectedOutput);
+        }
+
+        [Fact]
+        public async Task TeamsController_DeleteTeam_ReturnsExpectedResult()
+        {
+            // Arrange
+            var id = 1;
+
+            _teamServiceMock.Setup(service => service.DeleteTeamByIdAsync(id))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _teamsController.DeleteTeam(id);
+
+            // Assert
+            result.Should().BeOfType<NoContentResult>();
+            _teamServiceMock.Verify(service => service.DeleteTeamByIdAsync(id), Times.Once);
+        }
+
+        [Fact]
+        public async Task TeamsController_PutTeam_ReturnsExpectedResult()
+        {
+            // Arrange
+            var id = 1;
+            var requestInput = new TeamCreateDto
+            {
+                TeamName = "Updated Team",
+                CoachName = "Updated Coach",
+                LeagueName = "Updated League"
+            };
+
+            _teamServiceMock.Setup(service => service.UpdateTeamAsync(id, requestInput))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _teamsController.PutTeam(id, requestInput);
+
+            // Assert
+            result.Should().BeOfType<NoContentResult>();
+            _teamServiceMock.Verify(service => service.UpdateTeamAsync(id, requestInput), Times.Once);
         }
     }
 }
