@@ -32,7 +32,7 @@ namespace EntityFrameworkCore.Application.Services
             return teams;
         }
 
-        public async Task<TeamReadInfoDto> GetTeamByIdAsync(int id)
+        public async Task<TeamReadInfoDto?> GetTeamByIdAsync(int id)
         {
             var team = await _context.Teams
                 .Where(team => team.Id == id)
