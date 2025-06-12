@@ -117,7 +117,10 @@ namespace EntityFrameworkCore.Application.Services
                 throw new KeyNotFoundException($"Team with ID {id} not found.");
             }
 
-            team.Name = newTeam.TeamName;
+            if (!string.IsNullOrWhiteSpace(newTeam.TeamName))
+            {
+                team.Name = newTeam.TeamName;
+            }
 
             if (!string.IsNullOrWhiteSpace(newTeam.CoachName))
             {

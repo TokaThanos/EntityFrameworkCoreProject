@@ -1,7 +1,7 @@
 using System.IO;
 
 namespace EntityFrameworkCore.Data.Utility;
-public class EnvironmentVariableUtility
+public static class EnvironmentVariableUtility
 {
     public static void LoadEnv()
     {

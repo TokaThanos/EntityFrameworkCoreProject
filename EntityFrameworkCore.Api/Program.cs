@@ -19,7 +19,7 @@ EnvironmentVariableUtility.LoadEnv();
 var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD")
     ?? throw new InvalidOperationException("Environment variable DB_PASSWORD is not set.");
 
-var connectionString = builder.Configuration.GetConnectionString("SqlServerConnectionString");
+var connectionString = builder.Configuration.GetConnectionString("SqlDatabaseConnectionString");
 connectionString = connectionString?.Replace("{password}", dbPassword);
 #endregion
 
