@@ -5,7 +5,9 @@ name: .NET CI
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "feature/**" ]
+  push:
+    branches: [ "feature/**" ]
 
 jobs:
   build:
