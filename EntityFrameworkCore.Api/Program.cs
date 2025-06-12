@@ -27,7 +27,7 @@ builder.Services.AddDbContext<FootballLeagueDbContext>(options =>
 {
     options.UseSqlServer(connectionString)
         .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-        .LogTo(Console.WriteLine, LogLevel.Information)
+        //.LogTo(Console.WriteLine, LogLevel.Information)
         .ConfigureWarnings(warings => warings.Ignore(RelationalEventId.PendingModelChangesWarning));
 
     if (!builder.Environment.IsProduction())
