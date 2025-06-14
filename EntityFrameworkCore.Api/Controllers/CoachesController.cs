@@ -60,9 +60,9 @@ namespace EntityFrameworkCore.Api.Controllers
             return CreatedAtAction(nameof(GetCoach), new { id = createdCoach.Id }, createdCoach);
         }
 
-        // PUT: api/Teams/5
+        // PUT: api/Coaches/5
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateTeam(int id, CoachCreateDto coach)
+        public async Task<ActionResult> UpdateCoach(int id, CoachCreateDto coach)
         {
             try
             {
