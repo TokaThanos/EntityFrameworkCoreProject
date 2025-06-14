@@ -4,11 +4,6 @@ using EntityFrameworkCore.Application.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Api.Tests.Controllers
 {
@@ -42,10 +37,10 @@ namespace EntityFrameworkCore.Api.Tests.Controllers
             var okResult = result.Result as OkObjectResult;
             okResult.Should().NotBeNull();
 
-            var actualTeams = okResult.Value as IEnumerable<TeamReadDto>; ;
-            actualTeams.Should().NotBeNull();
-            actualTeams.Should().HaveCount(2);
-            actualTeams.Should().BeAssignableTo<IEnumerable<TeamReadDto>>();
+            var responseValue = okResult.Value as IEnumerable<TeamReadDto>;
+            responseValue.Should().NotBeNull();
+            responseValue.Should().HaveCount(2);
+            responseValue.Should().BeAssignableTo<IEnumerable<TeamReadDto>>();
         }
 
         [Theory]
