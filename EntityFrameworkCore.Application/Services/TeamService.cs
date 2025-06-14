@@ -40,7 +40,7 @@ namespace EntityFrameworkCore.Application.Services
                 {
                     TeamName = team.Name,
                     CoachName = team.Coach.Name!,
-                    LeagueName = team.League.Name
+                    LeagueName = team.League != null ? team.League.Name : null
                 })
                 .FirstOrDefaultAsync();
 
@@ -57,7 +57,7 @@ namespace EntityFrameworkCore.Application.Services
             if (string.IsNullOrWhiteSpace(teamCreateDto.TeamName) || 
                 string.IsNullOrWhiteSpace(teamCreateDto.CoachName))
             {
-                throw new ArgumentException("Team Name or coach name can't be null");
+                throw new ArgumentException("Team Name and coach name can't be null");
             }
 
             var coach = await _context.Coaches
