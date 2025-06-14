@@ -62,7 +62,7 @@ namespace EntityFrameworkCore.Api.Controllers
 
         // PUT: api/Coaches/5
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateCoach(int id, CoachCreateDto coach)
+        public async Task<ActionResult> PutCoach(int id, CoachCreateDto coach)
         {
             try
             {
