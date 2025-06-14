@@ -37,7 +37,7 @@ namespace EntityFrameworkCore.Api.Tests.Controllers
             var okResult = result.Result as OkObjectResult;
             okResult.Should().NotBeNull();
 
-            var responseValue = okResult.Value as IEnumerable<TeamReadDto>; ;
+            var responseValue = okResult.Value as IEnumerable<TeamReadDto>;
             responseValue.Should().NotBeNull();
             responseValue.Should().HaveCount(2);
             responseValue.Should().BeAssignableTo<IEnumerable<TeamReadDto>>();
