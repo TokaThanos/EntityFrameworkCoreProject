@@ -38,6 +38,8 @@ builder.Services.AddDbContext<FootballLeagueDbContext>(options =>
 });
 
 builder.Services.AddScoped<ITeamService, TeamService>();
+builder.Services.AddScoped<ICoachService, CoachService>();
+builder.Services.AddScoped<ILeagueService, LeagueService>();
 
 var app = builder.Build();
 
