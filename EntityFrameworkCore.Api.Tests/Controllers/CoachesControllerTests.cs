@@ -130,7 +130,7 @@ namespace EntityFrameworkCore.Api.Tests.Controllers
                 .Returns(Task.CompletedTask);
 
             // Act
-            var result = await _coachesController.UpdateCoach(id, requestInput);
+            var result = await _coachesController.PutCoach(id, requestInput);
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
