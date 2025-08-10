@@ -16,11 +16,16 @@ builder.Services.AddSwaggerGen();
 
 #region ConnectionStringConfiguration
 EnvironmentVariableUtility.LoadEnv();
-var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD")
-    ?? throw new InvalidOperationException("Environment variable DB_PASSWORD is not set.");
 
-var connectionString = builder.Configuration.GetConnectionString("SqlDatabaseConnectionString");
-connectionString = connectionString?.Replace("{password}", dbPassword);
+var connectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION")
+    ?? throw new InvalidOperationException("Environment variable SQL_CONNECTION is not set.");
+#endregion
+
+#region JWTKeyConfiguration
+var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
+    ?? throw new InvalidOperationException("JWT_KEY is not set");
+
+builder.Configuration["Jwt:Key"] = jwtKey;
 #endregion
 
 builder.Services.AddDbContext<FootballLeagueDbContext>(options => 
@@ -40,6 +45,7 @@ builder.Services.AddDbContext<FootballLeagueDbContext>(options =>
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<ICoachService, CoachService>();
 builder.Services.AddScoped<ILeagueService, LeagueService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
