@@ -29,7 +29,9 @@ namespace EntityFrameworkCore.Application.Services
         }
         public async Task<string?> LoginAsync(UserRequestDto request)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(user => user.UserName.ToLower() == request.UserName.ToLower());
+            var normalizedUserName = request.UserName.ToLowerInvariant();
+            var user = await _context.Users
+                .FirstOrDefaultAsync(user => user.UserNameNormalized == normalizedUserName);
             if (user is null)
             {
                 return null;
@@ -46,16 +48,21 @@ namespace EntityFrameworkCore.Application.Services
 
         public async Task<UserResponseDto?> RegisterAsync(UserRequestDto request)
         {
-            if (await _context.Users.AnyAsync(user => user.UserName.ToLower() == request.UserName.ToLower()))
+            var normalizedUserName = request.UserName.ToLowerInvariant();
+
+            if (await _context.Users.AnyAsync(user => user.UserNameNormalized == normalizedUserName))
             {
                 return null;
             }
 
-            var user = new User();
+            var user = new User
+            {
+                UserName = request.UserName,
+                UserNameNormalized = normalizedUserName,
+            };
+
             var hashedPassword = new PasswordHasher<User>()
                 .HashPassword(user, request.Password);
-
-            user.UserName = request.UserName;
             user.PasswordHash = hashedPassword;
 
             _context.Users.Add(user);
