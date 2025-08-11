@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -26,9 +27,9 @@ namespace EntityFrameworkCore.Application.Services
             _context = context;
             _configuration = configuration;
         }
-        public async Task<string?> LoginAsync(UserDto request)
+        public async Task<string?> LoginAsync(UserRequestDto request)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(user => user.UserName == request.UserName);
+            var user = await _context.Users.FirstOrDefaultAsync(user => user.UserName.ToLower() == request.UserName.ToLower());
             if (user is null)
             {
                 return null;
@@ -43,9 +44,9 @@ namespace EntityFrameworkCore.Application.Services
             return CreateToken(user);
         }
 
-        public async Task<User?> RegisterAsync(UserDto request)
+        public async Task<UserResponseDto?> RegisterAsync(UserRequestDto request)
         {
-            if (await _context.Users.AnyAsync(user => user.UserName == request.UserName))
+            if (await _context.Users.AnyAsync(user => user.UserName.ToLower() == request.UserName.ToLower()))
             {
                 return null;
             }
@@ -60,7 +61,13 @@ namespace EntityFrameworkCore.Application.Services
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return user;
+            var userInfo = new UserResponseDto
+            {
+                Id = user.Id,
+                UserName = request.UserName
+            };
+
+            return userInfo;
         }
 
         private string CreateToken(User user)
@@ -81,7 +88,7 @@ namespace EntityFrameworkCore.Application.Services
                 audience: _configuration.GetValue<string>("Jwt:Audience"),
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(
-                    double.Parse(_configuration.GetValue<string>("Jwt:ExpireMinutes")!)),
+                    double.Parse(_configuration.GetValue<string>("Jwt:ExpireMinutes")!, CultureInfo.InvariantCulture)),
                 signingCredentials: creds
             );
 

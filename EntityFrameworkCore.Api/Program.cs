@@ -17,8 +17,8 @@ builder.Services.AddSwaggerGen();
 #region ConnectionStringConfiguration
 EnvironmentVariableUtility.LoadEnv();
 
-var connectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION")
-    ?? throw new InvalidOperationException("Environment variable SQL_CONNECTION is not set.");
+var connectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
+    ?? throw new InvalidOperationException("Environment variable SQL_CONNECTION_STRING is not set.");
 #endregion
 
 #region JWTKeyConfiguration
