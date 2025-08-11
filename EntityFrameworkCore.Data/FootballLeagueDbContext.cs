@@ -16,6 +16,8 @@ public class FootballLeagueDbContext : DbContext
     {
         
     }
+
+    public DbSet<User> Users { get; set; }
     public DbSet<Team> Teams { get; set; }
     public DbSet<Coach> Coaches { get; set; }
     public DbSet<League> Leagues { get; set; }
@@ -43,7 +45,7 @@ public class FootballLeagueDbContext : DbContext
         modelBuilder.Entity<TeamsAndLeaguesView>().HasNoKey().ToView("vw_TeamsAndLeagues");
         modelBuilder
             .HasDbFunction(typeof(UserDefinedFunctions)
-            .GetMethod(nameof(UserDefinedFunctions.GetCoachNameByTeamId)))
+            .GetMethod(nameof(UserDefinedFunctions.GetCoachNameByTeamId))!)
             .HasName("fn_GetCoachNameByTeamId");
     }
 }
