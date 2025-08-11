@@ -43,6 +43,7 @@ namespace EntityFrameworkCore.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -252,6 +253,29 @@ namespace EntityFrameworkCore.Data.Migrations
                     b.ToTable((string)null);
 
                     b.ToView("vw_TeamsAndLeagues", (string)null);
+                });
+
+            modelBuilder.Entity("EntityFrameworkCore.Domain.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserNameNormalized")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.Domain.Match", b =>
