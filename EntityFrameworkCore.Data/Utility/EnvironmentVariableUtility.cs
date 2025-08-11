@@ -1,6 +1,7 @@
 using System.IO;
 
 namespace EntityFrameworkCore.Data.Utility;
+
 public static class EnvironmentVariableUtility
 {
     public static void LoadEnv()
@@ -18,5 +19,15 @@ public static class EnvironmentVariableUtility
             dir = dir.Parent;
         }
         throw new FileNotFoundException($".env file not found in any parent directory.");
+    }
+    
+    public static string GetEnvironmentVariable(string key)
+    {
+        var value = Environment.GetEnvironmentVariable(key);
+        if (string.IsNullOrEmpty(value))
+        {
+            throw new InvalidOperationException($"Environment variable {key} is not set.");
+        }
+        return value;
     }
 }

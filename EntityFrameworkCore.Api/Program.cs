@@ -14,17 +14,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-#region ConnectionStringConfiguration
+#region EnvironmentVariableConfiguration
 EnvironmentVariableUtility.LoadEnv();
+var dbPassword = EnvironmentVariableUtility.GetEnvironmentVariable("DB_PASSWORD");
 
-var connectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
-    ?? throw new InvalidOperationException("Environment variable SQL_CONNECTION_STRING is not set.");
-#endregion
+var connectionString = EnvironmentVariableUtility.GetEnvironmentVariable("SQL_CONNECTION_STRING");
 
-#region JWTKeyConfiguration
-var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY")
-    ?? throw new InvalidOperationException("JWT_KEY is not set");
-
+var jwtKey = EnvironmentVariableUtility.GetEnvironmentVariable("JWT_KEY");
 builder.Configuration["Jwt:Key"] = jwtKey;
 #endregion
 
