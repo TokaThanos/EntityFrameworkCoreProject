@@ -12,5 +12,6 @@ namespace EntityFrameworkCore.Domain
         public string UserName { get; set; } = string.Empty;
         public string UserNameNormalized { get; set; } = string.Empty;
         public string PasswordHash { get; set; } = string.Empty;
+        public List<UserRole> UserRoles { get; set; } = new List<UserRole>();
     }
 }

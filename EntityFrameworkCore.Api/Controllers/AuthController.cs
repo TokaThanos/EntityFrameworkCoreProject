@@ -1,9 +1,6 @@
 ﻿using EntityFrameworkCore.Application.Dtos;
 using EntityFrameworkCore.Application.Interfaces;
-using EntityFrameworkCore.Domain;
 using Microsoft.AspNetCore.Mvc;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Api.Controllers
 {
