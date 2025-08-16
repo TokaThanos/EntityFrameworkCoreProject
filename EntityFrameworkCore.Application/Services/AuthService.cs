@@ -67,7 +67,7 @@ namespace EntityFrameworkCore.Application.Services
                 .HashPassword(user, request.Password);
             user.PasswordHash = hashedPassword;
 
-            var defaultRole = await _context.Roles.FirstOrDefaultAsync(role => role.Name == "User");
+            var defaultRole = await _context.Roles.FirstOrDefaultAsync(role => role.Name == "user");
             if (defaultRole is not null)
             {
                 user.UserRoles = new List<UserRole>
