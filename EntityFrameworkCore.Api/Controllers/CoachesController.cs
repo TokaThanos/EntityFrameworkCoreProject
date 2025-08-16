@@ -1,10 +1,12 @@
 ﻿using EntityFrameworkCore.Application.Dtos;
 using EntityFrameworkCore.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CoachesController : ControllerBase
@@ -17,6 +19,7 @@ namespace EntityFrameworkCore.Api.Controllers
         }
 
         // GET: api/Coaches
+        [Authorize(Roles = "user,mod")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CoachReadDto>>> GetCoaches()
         {
@@ -24,6 +27,7 @@ namespace EntityFrameworkCore.Api.Controllers
         }
 
         // GET: api/Coaches/5
+        [Authorize(Roles = "user,mod")]
         [HttpGet("{id}")]
         public async Task<ActionResult<CoachReadInfoDto>> GetCoach(int id)
         {
@@ -36,6 +40,7 @@ namespace EntityFrameworkCore.Api.Controllers
         }
 
         // DELETE: api/Coaches/5
+        [Authorize(Roles = "mod")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCoach(int id)
         {
@@ -45,6 +50,7 @@ namespace EntityFrameworkCore.Api.Controllers
         }
 
         // POST: api/Coaches
+        [Authorize(Roles = "mod")]
         [HttpPost]
         public async Task<ActionResult<CoachReadDto>> PostCoach(CoachCreateDto coach)
         {
@@ -61,6 +67,7 @@ namespace EntityFrameworkCore.Api.Controllers
         }
 
         // PUT: api/Coaches/5
+        [Authorize(Roles = "mod")]
         [HttpPut("{id}")]
         public async Task<ActionResult> PutCoach(int id, CoachCreateDto coach)
         {

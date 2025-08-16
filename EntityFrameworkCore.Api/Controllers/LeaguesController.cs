@@ -1,10 +1,12 @@
 ﻿using EntityFrameworkCore.Application.Dtos;
 using EntityFrameworkCore.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class LeaguesController : ControllerBase
@@ -17,6 +19,7 @@ namespace EntityFrameworkCore.Api.Controllers
         }
 
         // GET: api/Leagues
+        [Authorize(Roles = "user,mod")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LeagueReadDto>>> GetLeagues()
         {
@@ -24,6 +27,7 @@ namespace EntityFrameworkCore.Api.Controllers
         }
 
         // GET: api/Leagues/5
+        [Authorize(Roles = "user,mod")]
         [HttpGet("{id}")]
         public async Task<ActionResult<LeagueReadInfoDto>> GetLeague(int id)
         {
@@ -37,6 +41,7 @@ namespace EntityFrameworkCore.Api.Controllers
 
         // PUT: api/Leagues/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "mod")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutLeague(int id, LeagueCreateDto league)
         {
@@ -66,6 +71,7 @@ namespace EntityFrameworkCore.Api.Controllers
 
         // POST: api/Leagues
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "mod")]
         [HttpPost]
         public async Task<ActionResult<LeagueReadDto>> PostLeague(LeagueCreateDto league)
         {
@@ -83,6 +89,7 @@ namespace EntityFrameworkCore.Api.Controllers
         }
 
         // DELETE: api/Leagues/5
+        [Authorize(Roles = "mod")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLeague(int id)
         {

@@ -31,6 +31,8 @@ namespace EntityFrameworkCore.Application.Services
         {
             var normalizedUserName = request.UserName.ToLowerInvariant();
             var user = await _context.Users
+                .Include(user => user.UserRoles)
+                .ThenInclude(userRole => userRole.Role)
                 .FirstOrDefaultAsync(user => user.UserNameNormalized == normalizedUserName);
             if (user is null)
             {
@@ -65,6 +67,15 @@ namespace EntityFrameworkCore.Application.Services
                 .HashPassword(user, request.Password);
             user.PasswordHash = hashedPassword;
 
+            var defaultRole = await _context.Roles.FirstOrDefaultAsync(role => role.Name == "User");
+            if (defaultRole is not null)
+            {
+                user.UserRoles = new List<UserRole>
+                {
+                    new UserRole { RoleId = defaultRole.Id },
+                };
+            }
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
@@ -84,6 +95,13 @@ namespace EntityFrameworkCore.Application.Services
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
+
+            var roles = user.UserRoles.Select(userRole => userRole.Role.Name);
+
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_configuration.GetValue<string>("Jwt:Key")!));
