@@ -85,7 +85,7 @@ Navigate to the solution root (where the `.sln` file is located), and use the fo
 > dotnet tool install --global dotnet-ef
 > ```
 
-### 4. Run the Console Application
+### 4. Run the Web Application
 
 Navigate to the `EntityFrameworkCore.Api` project and run:
 
