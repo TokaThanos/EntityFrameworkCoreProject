@@ -173,6 +173,38 @@ namespace EntityFrameworkCore.Data.Migrations
                     b.ToTable("Matches");
                 });
 
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Name = "admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Name = "user"
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            Name = "mod"
+                        });
+                });
+
             modelBuilder.Entity("EntityFrameworkCore.Domain.Team", b =>
                 {
                     b.Property<int>("Id")
@@ -278,6 +310,21 @@ namespace EntityFrameworkCore.Data.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("EntityFrameworkCore.Domain.UserRole", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("UserRoles", (string)null);
+                });
+
             modelBuilder.Entity("EntityFrameworkCore.Domain.Match", b =>
                 {
                     b.HasOne("EntityFrameworkCore.Domain.Team", "AwayTeam")
@@ -314,6 +361,25 @@ namespace EntityFrameworkCore.Data.Migrations
                     b.Navigation("League");
                 });
 
+            modelBuilder.Entity("EntityFrameworkCore.Domain.UserRole", b =>
+                {
+                    b.HasOne("EntityFrameworkCore.Domain.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EntityFrameworkCore.Domain.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("EntityFrameworkCore.Domain.Coach", b =>
                 {
                     b.Navigation("Team");
@@ -329,6 +395,11 @@ namespace EntityFrameworkCore.Data.Migrations
                     b.Navigation("AwayMatches");
 
                     b.Navigation("HomeMatches");
+                });
+
+            modelBuilder.Entity("EntityFrameworkCore.Domain.User", b =>
+                {
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

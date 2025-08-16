@@ -1,10 +1,12 @@
 ﻿using EntityFrameworkCore.Application.Dtos;
 using EntityFrameworkCore.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TeamsController : ControllerBase
@@ -17,6 +19,7 @@ namespace EntityFrameworkCore.Api.Controllers
         }
 
         // GET: api/Teams
+        [Authorize(Roles = "user,mod")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TeamReadDto>>> GetTeams()
         {
@@ -24,6 +27,7 @@ namespace EntityFrameworkCore.Api.Controllers
         }
 
         // GET: api/Teams/5
+        [Authorize(Roles = "user,mod")]
         [HttpGet("{id}")]
         public async Task<ActionResult<TeamReadInfoDto>> GetTeam(int id)
         {
@@ -39,6 +43,7 @@ namespace EntityFrameworkCore.Api.Controllers
 
         // PUT: api/Teams/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "mod")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTeam(int id, TeamCreateDto team)
         {
@@ -67,6 +72,7 @@ namespace EntityFrameworkCore.Api.Controllers
 
         // POST: api/Teams
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "mod")]
         [HttpPost]
         public async Task<ActionResult<TeamReadDto>> PostTeam(TeamCreateDto team)
         {
@@ -84,6 +90,7 @@ namespace EntityFrameworkCore.Api.Controllers
         }
 
         // DELETE: api/Teams/5
+        [Authorize(Roles = "mod")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTeam(int id)
         {
