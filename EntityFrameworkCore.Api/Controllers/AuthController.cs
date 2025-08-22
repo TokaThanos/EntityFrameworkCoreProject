@@ -16,7 +16,7 @@ namespace EntityFrameworkCore.Api.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserResponseDto>> Register(UserRequestDto request)
+        public async Task<ActionResult<Guid>> Register(UserRequestDto request)
         {
             var user = await _authService.RegisterAsync(request);
             if (user is null)
@@ -28,12 +28,23 @@ namespace EntityFrameworkCore.Api.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<TokenResponseDto>> Login(UserRequestDto request)
+        public async Task<ActionResult<LoginResponseDto>> Login(UserRequestDto request)
         {
             var result = await _authService.LoginAsync(request);
             if (result is null)
             {
                 return BadRequest("Invalid username or password");
+            }
+            return Ok(result);
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenRequestDto request)
+        {
+            var result = await _authService.TokenRefreshAsync(request);
+            if (result is null || result.AccessToken is null || result.RefreshToken is null)
+            {
+                return Unauthorized("Invalid token.");
             }
             return Ok(result);
         }
