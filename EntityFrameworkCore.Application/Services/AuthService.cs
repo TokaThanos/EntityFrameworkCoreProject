@@ -12,6 +12,7 @@ using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,7 +28,7 @@ namespace EntityFrameworkCore.Application.Services
             _context = context;
             _configuration = configuration;
         }
-        public async Task<string?> LoginAsync(UserRequestDto request)
+        public async Task<TokenResponseDto?> LoginAsync(UserRequestDto request)
         {
             var normalizedUserName = request.UserName.ToLowerInvariant();
             var user = await _context.Users
@@ -45,7 +46,13 @@ namespace EntityFrameworkCore.Application.Services
                 return null;
             }
 
-            return CreateToken(user);
+            var response = new TokenResponseDto
+            {
+                AccessToken = CreateToken(user),
+                RefreshToken = await GenerateAndSaveRefreshTokenAsync(user),
+            };
+
+            return response;
         }
 
         public async Task<UserResponseDto?> RegisterAsync(UserRequestDto request)
@@ -86,6 +93,24 @@ namespace EntityFrameworkCore.Application.Services
             };
 
             return userInfo;
+        }
+
+        private async Task<string> GenerateAndSaveRefreshTokenAsync(User user)
+        {
+            var refreshToken = GenerateRefreshToken();
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return refreshToken;
+        }
+
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[64];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
         }
 
         private string CreateToken(User user)

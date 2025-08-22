@@ -28,14 +28,14 @@ namespace EntityFrameworkCore.Api.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<string>> Login(UserRequestDto request)
+        public async Task<ActionResult<TokenResponseDto>> Login(UserRequestDto request)
         {
-            var token = await _authService.LoginAsync(request);
-            if (token is null)
+            var result = await _authService.LoginAsync(request);
+            if (result is null)
             {
                 return BadRequest("Invalid username or password");
             }
-            return Ok(token);
+            return Ok(result);
         }
     }
 }

@@ -11,6 +11,6 @@ namespace EntityFrameworkCore.Application.Interfaces
     public interface IAuthService
     {
         Task<UserResponseDto?> RegisterAsync(UserRequestDto request);
-        Task<string?> LoginAsync(UserRequestDto request);
+        Task<TokenResponseDto?> LoginAsync(UserRequestDto request);
     }
 }
