@@ -10,7 +10,8 @@ namespace EntityFrameworkCore.Application.Interfaces
 {
     public interface IAuthService
     {
-        Task<UserResponseDto?> RegisterAsync(UserRequestDto request);
-        Task<string?> LoginAsync(UserRequestDto request);
+        Task<Guid?> RegisterAsync(UserRequestDto request);
+        Task<LoginResponseDto?> LoginAsync(UserRequestDto request);
+        Task<TokenResponseDto?> TokenRefreshAsync(RefreshTokenRequestDto request);
     }
 }

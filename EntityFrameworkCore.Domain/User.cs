@@ -13,5 +13,7 @@ namespace EntityFrameworkCore.Domain
         public string UserNameNormalized { get; set; } = string.Empty;
         public string PasswordHash { get; set; } = string.Empty;
         public List<UserRole> UserRoles { get; set; } = new List<UserRole>();
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }
     }
 }
