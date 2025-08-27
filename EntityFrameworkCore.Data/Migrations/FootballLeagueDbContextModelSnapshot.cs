@@ -22,7 +22,7 @@ namespace EntityFrameworkCore.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.Coach", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.Coach", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -48,7 +48,7 @@ namespace EntityFrameworkCore.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Coaches");
+                    b.ToTable("Coaches", (string)null);
 
                     b.HasData(
                         new
@@ -74,7 +74,7 @@ namespace EntityFrameworkCore.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.League", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.League", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -100,7 +100,7 @@ namespace EntityFrameworkCore.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Leagues");
+                    b.ToTable("Leagues", (string)null);
 
                     b.HasData(
                         new
@@ -126,7 +126,7 @@ namespace EntityFrameworkCore.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.Match", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.Match", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -161,6 +161,9 @@ namespace EntityFrameworkCore.Data.Migrations
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("TicketPrice")
                         .HasColumnType("decimal(18,2)");
 
@@ -170,10 +173,10 @@ namespace EntityFrameworkCore.Data.Migrations
 
                     b.HasIndex("HomeTeamId");
 
-                    b.ToTable("Matches");
+                    b.ToTable("Matches", (string)null);
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.Role", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -185,7 +188,7 @@ namespace EntityFrameworkCore.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
 
                     b.HasData(
                         new
@@ -205,7 +208,7 @@ namespace EntityFrameworkCore.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.Team", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.Team", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -242,7 +245,7 @@ namespace EntityFrameworkCore.Data.Migrations
 
                     b.HasIndex("LeagueId");
 
-                    b.ToTable("Teams");
+                    b.ToTable("Teams", (string)null);
 
                     b.HasData(
                         new
@@ -274,20 +277,7 @@ namespace EntityFrameworkCore.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.TeamsAndLeaguesView", b =>
-                {
-                    b.Property<string>("LeagueName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TeamName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("vw_TeamsAndLeagues", (string)null);
-                });
-
-            modelBuilder.Entity("EntityFrameworkCore.Domain.User", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -313,10 +303,10 @@ namespace EntityFrameworkCore.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.UserRole", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.UserRole", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -331,15 +321,28 @@ namespace EntityFrameworkCore.Data.Migrations
                     b.ToTable("UserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.Match", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Views.TeamsAndLeaguesView", b =>
                 {
-                    b.HasOne("EntityFrameworkCore.Domain.Team", "AwayTeam")
+                    b.Property<string>("LeagueName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TeamName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("vw_TeamsAndLeagues", (string)null);
+                });
+
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.Match", b =>
+                {
+                    b.HasOne("EntityFrameworkCore.Domain.Entities.Team", "AwayTeam")
                         .WithMany("AwayMatches")
                         .HasForeignKey("AwayTeamId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("EntityFrameworkCore.Domain.Team", "HomeTeam")
+                    b.HasOne("EntityFrameworkCore.Domain.Entities.Team", "HomeTeam")
                         .WithMany("HomeMatches")
                         .HasForeignKey("HomeTeamId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -350,15 +353,15 @@ namespace EntityFrameworkCore.Data.Migrations
                     b.Navigation("HomeTeam");
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.Team", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.Team", b =>
                 {
-                    b.HasOne("EntityFrameworkCore.Domain.Coach", "Coach")
+                    b.HasOne("EntityFrameworkCore.Domain.Entities.Coach", "Coach")
                         .WithOne("Team")
-                        .HasForeignKey("EntityFrameworkCore.Domain.Team", "CoachId")
+                        .HasForeignKey("EntityFrameworkCore.Domain.Entities.Team", "CoachId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EntityFrameworkCore.Domain.League", "League")
+                    b.HasOne("EntityFrameworkCore.Domain.Entities.League", "League")
                         .WithMany("Teams")
                         .HasForeignKey("LeagueId");
 
@@ -367,15 +370,15 @@ namespace EntityFrameworkCore.Data.Migrations
                     b.Navigation("League");
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.UserRole", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.UserRole", b =>
                 {
-                    b.HasOne("EntityFrameworkCore.Domain.Role", "Role")
+                    b.HasOne("EntityFrameworkCore.Domain.Entities.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EntityFrameworkCore.Domain.User", "User")
+                    b.HasOne("EntityFrameworkCore.Domain.Entities.User", "User")
                         .WithMany("UserRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -386,24 +389,24 @@ namespace EntityFrameworkCore.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.Coach", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.Coach", b =>
                 {
                     b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.League", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.League", b =>
                 {
                     b.Navigation("Teams");
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.Team", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.Team", b =>
                 {
                     b.Navigation("AwayMatches");
 
                     b.Navigation("HomeMatches");
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.User", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.User", b =>
                 {
                     b.Navigation("UserRoles");
                 });

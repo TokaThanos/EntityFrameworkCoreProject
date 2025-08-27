@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using EntityFrameworkCore.Domain;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using EntityFrameworkCore.Data.Utility;
+using EntityFrameworkCore.Domain.Entities;
+using EntityFrameworkCore.Domain.Views;
 // using EntityFrameworkCore.Data.Configurations;
 
 namespace EntityFrameworkCore.Data;
