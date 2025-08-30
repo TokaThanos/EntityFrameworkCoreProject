@@ -41,16 +41,16 @@ namespace EntityFrameworkCore.Api.Controllers
         public async Task<ActionResult<MatchReadDto>> PostMatch(MatchCreateDto matchCreateDto)
         {
             var command = new CreateMatchCommand(matchCreateDto);
-            MatchReadDto cretedMatch;
+            MatchReadDto createdMatch;
             try
             {
-                cretedMatch = await _mediator.Send(command);
+                createdMatch = await _mediator.Send(command);
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
-            return CreatedAtAction(nameof(GetMatch), new {id = cretedMatch.Id}, cretedMatch);
+            return CreatedAtAction(nameof(GetMatch), new {id = createdMatch.Id}, createdMatch);
         }
 
         [HttpPut("{id}")]

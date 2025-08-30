@@ -135,11 +135,11 @@ namespace EntityFrameworkCore.Application.Services
 
             if (matchUpdateDto.Date.HasValue)
             {
-                match.Date = (DateTime)matchUpdateDto.Date;
+                match.Date = matchUpdateDto.Date.Value;
             }
             if (matchUpdateDto.TicketPrice.HasValue)
             {
-                match.TicketPrice = (Decimal)matchUpdateDto.TicketPrice;
+                match.TicketPrice = matchUpdateDto.TicketPrice.Value;
             }
 
             await _context.SaveChangesAsync();
