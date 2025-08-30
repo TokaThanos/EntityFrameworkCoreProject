@@ -1,7 +1,7 @@
 using EntityFrameworkCore.Application.Dtos;
 using EntityFrameworkCore.Application.Interfaces;
 using EntityFrameworkCore.Data;
-using EntityFrameworkCore.Domain;
+using EntityFrameworkCore.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -39,7 +39,7 @@ namespace EntityFrameworkCore.Application.Services
                 .Select(team => new TeamReadInfoDto
                 {
                     TeamName = team.Name,
-                    CoachName = team.Coach.Name!,
+                    CoachName = team.Coach!.Name,
                     LeagueName = team.League != null ? team.League.Name : null
                 })
                 .FirstOrDefaultAsync();
@@ -61,7 +61,7 @@ namespace EntityFrameworkCore.Application.Services
             }
 
             var coach = await _context.Coaches
-                .FirstOrDefaultAsync(coach => coach.Name!.ToLower() == teamCreateDto.CoachName.ToLower());
+                .FirstOrDefaultAsync(coach => coach.Name.ToLower() == teamCreateDto.CoachName.ToLower());
 
             if (coach == null)
             {
@@ -108,7 +108,7 @@ namespace EntityFrameworkCore.Application.Services
             return teamInfo;
         }
 
-        public async Task UpdateTeamAsync(int id, TeamCreateDto newTeam)
+        public async Task UpdateTeamAsync(int id, TeamUpdateDto newTeam)
         {
             var team = await _context.Teams
                 .AsTracking()
@@ -127,7 +127,7 @@ namespace EntityFrameworkCore.Application.Services
             if (!string.IsNullOrWhiteSpace(newTeam.CoachName))
             {
                 var coach = await _context.Coaches
-                    .FirstOrDefaultAsync(coach => coach.Name!.ToLower() ==  newTeam.CoachName.ToLower());
+                    .FirstOrDefaultAsync(coach => coach.Name.ToLower() ==  newTeam.CoachName.ToLower());
                 if (coach == null)
                 {
                     coach = new Coach { Name = newTeam.CoachName };

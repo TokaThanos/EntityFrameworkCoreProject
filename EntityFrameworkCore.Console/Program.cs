@@ -1,7 +1,7 @@
 ﻿using EntityFrameworkCore.Console;
 using EntityFrameworkCore.Data;
 using EntityFrameworkCore.Data.Utility;
-using EntityFrameworkCore.Domain;
+using EntityFrameworkCore.Domain.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +17,7 @@ Use projections when building APIs, lists, or dashboards which are read only —
 #endregion
 
 #region Method Calls
-// await GetAllTeamsAsync();
+ await GetAllTeamsAsync();
 // await GetOneTeamAsync();
 // await GetMoreThanOneTeamAsync();
 // await AggregateMethodsAsync();
@@ -59,7 +59,7 @@ Use projections when building APIs, lists, or dashboards which are read only —
 // await RawSqlWithLINQ();
 // await ExecuteNonQueryStatementUsingRawSql();
 // await ExecuteStoredProcedureUsingScalarOrNonEntityType();
-await ExecuteUserDefinedFunction();
+// await ExecuteUserDefinedFunction();
 
 #endregion
 

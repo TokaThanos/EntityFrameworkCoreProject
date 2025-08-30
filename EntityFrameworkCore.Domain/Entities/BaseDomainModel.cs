@@ -1,4 +1,4 @@
-namespace EntityFrameworkCore.Domain;
+namespace EntityFrameworkCore.Domain.Entities;
 
 public abstract class BaseDomainModel
 {

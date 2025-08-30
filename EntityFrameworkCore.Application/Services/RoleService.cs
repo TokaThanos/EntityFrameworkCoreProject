@@ -1,7 +1,7 @@
 ﻿using EntityFrameworkCore.Application.Dtos;
 using EntityFrameworkCore.Application.Interfaces;
 using EntityFrameworkCore.Data;
-using EntityFrameworkCore.Domain;
+using EntityFrameworkCore.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.Application.Services

@@ -1,7 +1,7 @@
 ﻿using EntityFrameworkCore.Application.Dtos;
 using EntityFrameworkCore.Application.Interfaces;
 using EntityFrameworkCore.Data;
-using EntityFrameworkCore.Domain;
+using EntityFrameworkCore.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

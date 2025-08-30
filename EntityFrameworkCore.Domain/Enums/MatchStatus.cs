@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EntityFrameworkCore.Application.Dtos
+namespace EntityFrameworkCore.Domain.Enums
 {
-    public class LeagueCreateDto
+    public enum MatchStatus
     {
-        public required string LeagueName { get; set; }
+        Scheduled,
+        InProgress,
+        Finished
     }
 }
