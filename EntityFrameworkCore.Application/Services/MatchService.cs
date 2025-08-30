@@ -68,8 +68,8 @@ namespace EntityFrameworkCore.Application.Services
                 .Select(match => new MatchReadDto
                 {
                     Id = match.Id,
-                    HomeTeamName = match.HomeTeam.Name,
-                    AwayTeamName = match.AwayTeam.Name
+                    HomeTeamName = match.HomeTeam!.Name,
+                    AwayTeamName = match.AwayTeam!.Name
                 }).ToListAsync();
 
             return matches;
@@ -90,8 +90,8 @@ namespace EntityFrameworkCore.Application.Services
 
             var matchInfo = new MatchReadInfoDto
             {
-                HomeTeamName = match.HomeTeam.Name,
-                AwayTeamName = match.AwayTeam.Name,
+                HomeTeamName = match.HomeTeam!.Name,
+                AwayTeamName = match.AwayTeam!.Name,
                 HomeTeamScore = match.HomeTeamScore,
                 AwayTeamScore = match.AwayTeamScore,
                 TicketPrice = match.TicketPrice,

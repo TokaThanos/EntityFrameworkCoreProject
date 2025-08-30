@@ -26,9 +26,11 @@ namespace EntityFrameworkCore.Application.Services
                 throw new ArgumentException("League name can't be null");
             }
 
-            League league = new League();
+            League league = new League
+            {
+                Name = leagueCreateDto.LeagueName,
+            };
 
-            league.Name = leagueCreateDto.LeagueName;
             _context.Leagues.Add(league);
 
             await _context.SaveChangesAsync();

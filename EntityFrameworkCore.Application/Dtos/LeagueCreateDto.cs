@@ -8,6 +8,6 @@ namespace EntityFrameworkCore.Application.Dtos
 {
     public class LeagueCreateDto
     {
-        public string LeagueName { get; set; } = string.Empty;
+        public required string LeagueName { get; set; }
     }
 }
