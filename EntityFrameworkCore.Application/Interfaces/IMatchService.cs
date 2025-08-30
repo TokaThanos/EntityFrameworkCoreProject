@@ -11,8 +11,8 @@ namespace EntityFrameworkCore.Application.Interfaces
     {
         Task<IEnumerable<MatchReadDto>> GetAllMatchesAsync();
         Task<MatchReadInfoDto?> GetMatchByIdAsync(int id);
-        Task DeleteMatchById(int id);
+        Task DeleteMatchByIdAsync(int id);
         Task<MatchReadDto> AddMatchAsync(MatchCreateDto match);
-        Task UpdateMatchAsync(int id, MatchCreateDto match);
+        Task UpdateMatchAsync(int id, MatchUpdateDto match);
     }
 }

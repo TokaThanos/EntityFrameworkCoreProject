@@ -61,8 +61,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<ICoachService, CoachService>();
 builder.Services.AddScoped<ILeagueService, LeagueService>();
+builder.Services.AddScoped<IMatchService, MatchService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+
+// Register MediatR
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssemblies(
+        typeof(EntityFrameworkCore.Application.Matches.Queries.GetMatchByIdQuery).Assembly
+    ));
 
 var app = builder.Build();
 

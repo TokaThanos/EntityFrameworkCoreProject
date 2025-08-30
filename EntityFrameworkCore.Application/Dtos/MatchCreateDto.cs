@@ -8,8 +8,8 @@ namespace EntityFrameworkCore.Application.Dtos
 {
     public class MatchCreateDto
     {
-        public string HomeTeamName { get; set; } = string.Empty;
-        public string AwayTeamName { get; set; } = string.Empty;
+        public required string HomeTeamName { get; set; }
+        public required string AwayTeamName { get; set; }
         public decimal TicketPrice { get; set; }
         public DateTime Date { get; set; }
     }
