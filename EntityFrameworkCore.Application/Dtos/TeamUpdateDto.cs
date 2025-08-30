@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Application.Dtos
 {
-    public class TeamCreateDto
+    public class TeamUpdateDto
     {
-        public required string TeamName { get; set; }
-        public required string CoachName { get; set; }
+        public string? TeamName { get; set; }
+        public string? CoachName { get; set; }
         public string? LeagueName { get; set; }
     }
 }

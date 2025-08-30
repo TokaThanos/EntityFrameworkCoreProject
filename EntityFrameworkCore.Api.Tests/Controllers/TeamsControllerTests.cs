@@ -122,7 +122,7 @@ namespace EntityFrameworkCore.Api.Tests.Controllers
         {
             // Arrange
             var id = 1;
-            var requestInput = new TeamCreateDto
+            var requestInput = new TeamUpdateDto
             {
                 TeamName = "Updated Team",
                 CoachName = "Updated Coach",

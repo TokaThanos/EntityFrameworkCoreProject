@@ -45,7 +45,7 @@ namespace EntityFrameworkCore.Api.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize(Roles = "mod")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTeam(int id, TeamCreateDto team)
+        public async Task<IActionResult> PutTeam(int id, TeamUpdateDto team)
         {
             try
             {

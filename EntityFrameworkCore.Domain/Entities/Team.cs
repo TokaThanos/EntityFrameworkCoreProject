@@ -2,9 +2,9 @@ namespace EntityFrameworkCore.Domain.Entities;
 
 public class Team : BaseDomainModel
 {
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
-    public Coach Coach { get; set; }
+    public Coach? Coach { get; set; }
     public int CoachId { get; set; }
 
     public League? League { get; set; }

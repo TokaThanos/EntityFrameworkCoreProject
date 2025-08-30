@@ -26,9 +26,11 @@ namespace EntityFrameworkCore.Application.Services
                 throw new ArgumentException("Coach name can't be null");
             }
 
-            Coach coach = new Coach();
+            Coach coach = new Coach
+            {
+                Name = coachCreateDto.CoachName
+            };
 
-            coach.Name = coachCreateDto.CoachName;
             _context.Coaches.Add(coach);
 
             await _context.SaveChangesAsync();
