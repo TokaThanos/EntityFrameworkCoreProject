@@ -10,7 +10,6 @@ using Moq;
 namespace EntityFrameworkCore.Api.Tests.Controllers
 {
     public class MatchesControllerTests
-
     {
         private readonly Mock<IMediator> _mediatorMock;
         private readonly MatchesController _controller;
