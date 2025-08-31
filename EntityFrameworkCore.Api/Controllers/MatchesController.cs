@@ -2,10 +2,12 @@
 using EntityFrameworkCore.Application.Matches.Commands;
 using EntityFrameworkCore.Application.Matches.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EntityFrameworkCore.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MatchesController : ControllerBase
@@ -17,6 +19,7 @@ namespace EntityFrameworkCore.Api.Controllers
             _mediator = mediator;
         }
 
+        [Authorize(Roles = "user,mod")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MatchReadDto>>> GetMatches()
         {
@@ -25,6 +28,7 @@ namespace EntityFrameworkCore.Api.Controllers
             return Ok(matches);
         }
 
+        [Authorize(Roles = "user,mod")]
         [HttpGet("{id}")]
         public async Task<ActionResult<MatchReadInfoDto>> GetMatch(int id)
         {
@@ -37,6 +41,7 @@ namespace EntityFrameworkCore.Api.Controllers
             return Ok(match);
         }
 
+        [Authorize(Roles = "mod")]
         [HttpPost]
         public async Task<ActionResult<MatchReadDto>> PostMatch(MatchCreateDto matchCreateDto)
         {
@@ -53,6 +58,7 @@ namespace EntityFrameworkCore.Api.Controllers
             return CreatedAtAction(nameof(GetMatch), new {id = createdMatch.Id}, createdMatch);
         }
 
+        [Authorize(Roles = "mod")]
         [HttpPut("{id}")]
         public async Task<ActionResult> PutMatch(int id, MatchUpdateDto matchUpdateDto)
         {
@@ -72,6 +78,7 @@ namespace EntityFrameworkCore.Api.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "mod")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteMatch(int id)
         {
