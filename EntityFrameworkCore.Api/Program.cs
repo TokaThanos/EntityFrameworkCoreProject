@@ -28,9 +28,7 @@ public class Program
         if (!builder.Environment.IsEnvironment("Test"))
         {
             EnvironmentVariableUtility.LoadEnv();
-            //var dbPassword = EnvironmentVariableUtility.GetEnvironmentVariable("DB_PASSWORD");
 
-            //var connectionString = EnvironmentVariableUtility.GetEnvironmentVariable("SQL_CONNECTION_STRING");
             connectionString = EnvironmentVariableUtility.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING");
 
             var jwtKey = EnvironmentVariableUtility.GetEnvironmentVariable("JWT_KEY");
@@ -40,11 +38,6 @@ public class Program
 
         builder.Services.AddDbContext<FootballLeagueDbContext>(options =>
         {
-            /*options.UseSqlServer(connectionString)
-                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-                //.LogTo(Console.WriteLine, LogLevel.Information)
-                .ConfigureWarnings(warings => warings.Ignore(RelationalEventId.PendingModelChangesWarning));*/
-
             options.UseNpgsql(connectionString)
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
                 .ConfigureWarnings(warings => warings.Ignore(RelationalEventId.PendingModelChangesWarning));
@@ -52,7 +45,7 @@ public class Program
             if (!builder.Environment.IsProduction())
             {
                 options.EnableSensitiveDataLogging()
-                .EnableDetailedErrors();
+                    .EnableDetailedErrors();
             }
         });
 

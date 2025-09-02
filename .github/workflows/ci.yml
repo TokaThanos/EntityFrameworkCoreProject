@@ -14,11 +14,6 @@ jobs:
     name: build-and-test
     runs-on: ubuntu-latest
 
-    env:
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      JWT_KEY: ${{ secrets.JWT_KEY }}
-      POSTGRES_CONNECTION_STRING: ${{ secrets.POSTGRES_CONNECTION_STRING }}
-
     steps:
     - uses: actions/checkout@v4
 
