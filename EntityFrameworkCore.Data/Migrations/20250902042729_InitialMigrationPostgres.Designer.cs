@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EntityFrameworkCore.Data.Migrations
 {
     [DbContext(typeof(FootballLeagueDbContext))]
-    [Migration("20250901172042_InitialMigrationPostgres")]
+    [Migration("20250902042729_InitialMigrationPostgres")]
     partial class InitialMigrationPostgres
     {
         /// <inheritdoc />
@@ -255,7 +255,7 @@ namespace EntityFrameworkCore.Data.Migrations
                         {
                             Id = 101,
                             CoachId = 1,
-                            CreatedDate = new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Utc),
                             LeagueId = 3,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Manchester United"
@@ -264,7 +264,7 @@ namespace EntityFrameworkCore.Data.Migrations
                         {
                             Id = 102,
                             CoachId = 3,
-                            CreatedDate = new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Utc),
                             LeagueId = 1,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "F.C. Barcelona"
@@ -273,7 +273,7 @@ namespace EntityFrameworkCore.Data.Migrations
                         {
                             Id = 103,
                             CoachId = 2,
-                            CreatedDate = new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Utc),
                             LeagueId = 1,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Real Madrid"

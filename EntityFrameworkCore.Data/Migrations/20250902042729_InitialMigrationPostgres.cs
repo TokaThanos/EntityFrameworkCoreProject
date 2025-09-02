@@ -200,9 +200,9 @@ namespace EntityFrameworkCore.Data.Migrations
                 columns: new[] { "Id", "CoachId", "CreatedBy", "CreatedDate", "LeagueId", "ModifiedBy", "ModifiedDate", "Name" },
                 values: new object[,]
                 {
-                    { 101, 1, null, new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Unspecified), 3, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Manchester United" },
-                    { 102, 3, null, new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "F.C. Barcelona" },
-                    { 103, 2, null, new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Real Madrid" }
+                    { 101, 1, null, new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Utc), 3, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Manchester United" },
+                    { 102, 3, null, new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Utc), 1, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "F.C. Barcelona" },
+                    { 103, 2, null, new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Utc), 1, null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Real Madrid" }
                 });
 
             migrationBuilder.CreateIndex(

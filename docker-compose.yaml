@@ -1,18 +1,3 @@
-# services:
-#   sqlserver:
-#     image: mcr.microsoft.com/mssql/server:2019-latest
-#     ports:
-#       - "1433:1433"
-#     environment:
-#       SA_PASSWORD: ${DB_PASSWORD}
-#       ACCEPT_EULA: "Y"
-#       MSSQL_PID: Express
-#     volumes:
-#       - mssql_data:/var/opt/mssql
-
-# volumes:
-#   mssql_data:
-
 services:
   postgres:
     image: postgres:15-alpine
