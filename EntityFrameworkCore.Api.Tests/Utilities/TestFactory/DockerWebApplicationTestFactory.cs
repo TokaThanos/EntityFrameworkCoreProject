@@ -17,11 +17,13 @@ namespace EntityFrameworkCore.Api.Tests.Utilities.TestFactory
 
         public DockerWebApplicationTestFactory()
         {
+            var password = Environment.GetEnvironmentVariable("POSTGRES_TEST_PASSWORD");
             _dbContainer = new PostgreSqlBuilder()
                 .WithImage("postgres:15-alpine")
                 .WithDatabase("FootballLeague_EfCore_Test")
                 .WithUsername("postgres")
-                .WithPassword("YourStrong!Passw0rd")
+                .WithPassword(password)
+                // .WithPassword("YourStrong!Passw0rd")
                 .Build();
         }
 
