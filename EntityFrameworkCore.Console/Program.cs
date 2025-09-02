@@ -1,8 +1,6 @@
 ﻿using EntityFrameworkCore.Console;
 using EntityFrameworkCore.Data;
-using EntityFrameworkCore.Data.Utility;
 using EntityFrameworkCore.Domain.Entities;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 using FootballLeagueDbContext context = new FootballLeagueDbContext();
@@ -553,14 +551,14 @@ async Task GetTeamDetailsWithAdvancedProjectionAsync()
 //    }
 //}
 
-async Task UsingSqlRaw()
-{
-    Console.WriteLine("Search Team: ");
-    var name = Console.ReadLine();
-    var param = new SqlParameter("teamName", name); // Always parameterize input while using FromSqlRaw to prevent sql injection
-    var team = await context.Teams.FromSqlRaw($"SELECT * FROM Teams WHERE name = @teamName", param).FirstOrDefaultAsync();
-    Console.WriteLine($"{team?.Name}");
-}
+//async Task UsingSqlRaw()
+//{
+//    Console.WriteLine("Search Team: ");
+//    var name = Console.ReadLine();
+//    var param = new SqlParameter("teamName", name); // Always parameterize input while using FromSqlRaw to prevent sql injection
+//    var team = await context.Teams.FromSqlRaw($"SELECT * FROM Teams WHERE name = @teamName", param).FirstOrDefaultAsync();
+//    Console.WriteLine($"{team?.Name}");
+//}
 
 async Task UsingSqlInterpolated()
 {

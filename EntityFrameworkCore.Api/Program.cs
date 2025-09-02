@@ -1,7 +1,6 @@
 using EntityFrameworkCore.Application.Interfaces;
 using EntityFrameworkCore.Application.Services;
 using EntityFrameworkCore.Data;
-using EntityFrameworkCore.Data.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -24,14 +23,14 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         #region EnvironmentVariableConfiguration
-        string connectionString = string.Empty;
-        if (!builder.Environment.IsEnvironment("Test"))
+        string? connectionString = string.Empty;
+        if (builder.Environment.IsDevelopment())
         {
-            EnvironmentVariableUtility.LoadEnv();
+            DotNetEnv.Env.Load("../.env");
 
-            connectionString = EnvironmentVariableUtility.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING");
+            connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING");
 
-            var jwtKey = EnvironmentVariableUtility.GetEnvironmentVariable("JWT_KEY");
+            var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
             builder.Configuration["Jwt:Key"] = jwtKey;
         }
         #endregion

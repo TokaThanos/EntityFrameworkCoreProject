@@ -27,7 +27,6 @@ namespace EntityFrameworkCore.Api.Tests.Utilities.TestFactory
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.UseEnvironment("Test");
             var connectionString = _dbContainer.GetConnectionString();
             base.ConfigureWebHost(builder);
             builder.ConfigureTestServices(services =>
