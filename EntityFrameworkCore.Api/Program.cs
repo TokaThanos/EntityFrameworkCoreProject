@@ -24,14 +24,18 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         #region EnvironmentVariableConfiguration
-        EnvironmentVariableUtility.LoadEnv();
-        //var dbPassword = EnvironmentVariableUtility.GetEnvironmentVariable("DB_PASSWORD");
+        string connectionString = string.Empty;
+        if (!builder.Environment.IsEnvironment("Test"))
+        {
+            EnvironmentVariableUtility.LoadEnv();
+            //var dbPassword = EnvironmentVariableUtility.GetEnvironmentVariable("DB_PASSWORD");
 
-        //var connectionString = EnvironmentVariableUtility.GetEnvironmentVariable("SQL_CONNECTION_STRING");
-        var connectionString = EnvironmentVariableUtility.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING");
+            //var connectionString = EnvironmentVariableUtility.GetEnvironmentVariable("SQL_CONNECTION_STRING");
+            connectionString = EnvironmentVariableUtility.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING");
 
-        var jwtKey = EnvironmentVariableUtility.GetEnvironmentVariable("JWT_KEY");
-        builder.Configuration["Jwt:Key"] = jwtKey;
+            var jwtKey = EnvironmentVariableUtility.GetEnvironmentVariable("JWT_KEY");
+            builder.Configuration["Jwt:Key"] = jwtKey;
+        }
         #endregion
 
         builder.Services.AddDbContext<FootballLeagueDbContext>(options =>
