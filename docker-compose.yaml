@@ -1,14 +1,29 @@
+# services:
+#   sqlserver:
+#     image: mcr.microsoft.com/mssql/server:2019-latest
+#     ports:
+#       - "1433:1433"
+#     environment:
+#       SA_PASSWORD: ${DB_PASSWORD}
+#       ACCEPT_EULA: "Y"
+#       MSSQL_PID: Express
+#     volumes:
+#       - mssql_data:/var/opt/mssql
+
+# volumes:
+#   mssql_data:
+
 services:
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+  postgres:
+    image: postgres:15-alpine
     ports:
-      - "1433:1433"
+      - "5432:5432"
     environment:
-      SA_PASSWORD: ${DB_PASSWORD}
-      ACCEPT_EULA: "Y"
-      MSSQL_PID: Express
+      POSTGRES_DB: FootballLeague_EfCore
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - mssql_data:/var/opt/mssql
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  mssql_data:
+  postgres_data:
