@@ -1,36 +1,44 @@
-﻿using EntityFrameworkCore.Data;
+﻿using EntityFrameworkCore.Api.Tests.Utilities.TestServices;
+using EntityFrameworkCore.Data;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Testcontainers.MsSql;
+using Testcontainers.PostgreSql;
 
-namespace EntityFrameworkCore.Api.Tests.Utilities.Fixture
+namespace EntityFrameworkCore.Api.Tests.Utilities.TestFactory
 {
-    public class DockerWebApplicationTestFactoryFixture : WebApplicationFactory<EntityFrameworkCore.Api.Program>, IAsyncLifetime
+    public class DockerWebApplicationTestFactory : WebApplicationFactory<EntityFrameworkCore.Api.Program>, IAsyncLifetime
     {
-        private readonly MsSqlContainer _dbContainer;
-        private string _connectionString = string.Empty;
+        private readonly PostgreSqlContainer _dbContainer;
 
-        public DockerWebApplicationTestFactoryFixture()
+        public DockerWebApplicationTestFactory()
         {
-            _dbContainer = new MsSqlBuilder().Build();
+            _dbContainer = new PostgreSqlBuilder()
+                .WithImage("postgres:15-alpine")
+                .WithDatabase("FootballLeague_EfCore_Test")
+                .WithUsername("postgres")
+                .WithPassword("YourStrong!Passw0rd")
+                .Build();
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            _connectionString = _dbContainer.GetConnectionString();
+            var connectionString = _dbContainer.GetConnectionString();
             base.ConfigureWebHost(builder);
             builder.ConfigureTestServices(services =>
             {
                 services.RemoveAll(typeof(DbContextOptions<FootballLeagueDbContext>));
                 services.AddDbContext<FootballLeagueDbContext>(options =>
                 {
-                    options.UseSqlServer(_connectionString);
+                    options.UseNpgsql(connectionString);
                 });
+
+                services.AddAuthentication("Test")
+                    .AddScheme<AuthenticationSchemeOptions, FakeJwtAuthHandler>("Test", options => { });
             });
         }
 
