@@ -24,7 +24,7 @@ namespace EntityFrameworkCore.Api.Tests.IntegrationTests
         public async Task PostTeam_Then_GetById_ShouldReturn_TheSameTeamData()
         {
             // Arrange
-            var fakeTeam = _fakeDataService.GetTeam();
+            var fakeTeam = _fakeDataService.GetTeamCreateDtoFake();
 
             // Act
             var postResponse = await _client.PostAsJsonAsync(HttpHelper.teamsRequestUrl, fakeTeam);
@@ -42,6 +42,44 @@ namespace EntityFrameworkCore.Api.Tests.IntegrationTests
             createdTeam!.Id.Should().BeGreaterThan(0);
             teamInfo!.TeamName.Should().Be(fakeTeam.TeamName);
             teamInfo.CoachName.Should().Be(fakeTeam.CoachName);
+        }
+
+        [Fact]
+        public async Task PostTeam_Then_PutTeam_ShouldReturn_NotFound()
+        {
+            // Arrange
+            var fakeTeam = _fakeDataService.GetTeamCreateDtoFake();
+            var fakeUpdateTeamData = _fakeDataService.GetTeamUpdateDtoFake();
+
+            // Act
+            var postResponse = await _client.PostAsJsonAsync(HttpHelper.teamsRequestUrl, fakeTeam);
+            var createdTeam = await postResponse.Content.ReadFromJsonAsync<TeamReadDto>();
+            var teamId = createdTeam!.Id;
+
+            var putResponse = await _client.PutAsJsonAsync($"{HttpHelper.teamsRequestUrl}/{teamId}", fakeUpdateTeamData);
+
+            // Assert
+            putResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Fact]
+        public async Task PostTeam_Then_DeleteTeam_ShouldReturn_ExpectedResult()
+        {
+            // Arrange
+            var fakeTeam = _fakeDataService.GetTeamCreateDtoFake();
+
+            // Act
+            var postResponse = await _client.PostAsJsonAsync(HttpHelper.teamsRequestUrl, fakeTeam);
+            var createdTeam = await postResponse.Content.ReadFromJsonAsync<TeamReadDto>();
+            var teamId = createdTeam!.Id;
+
+            var deleteResponse = await _client.DeleteAsync($"{HttpHelper.teamsRequestUrl}/{teamId}");
+            
+            var getResponseAfterDelete = await _client.GetAsync($"{HttpHelper.teamsRequestUrl}/{teamId}");
+
+            // Assert
+            deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            getResponseAfterDelete.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }
 }
