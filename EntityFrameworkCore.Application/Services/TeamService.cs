@@ -142,7 +142,7 @@ namespace EntityFrameworkCore.Application.Services
                     .FirstOrDefaultAsync(league => league.Name.ToLower() == newTeam.LeagueName.ToLower());
                 if (league == null)
                 {
-                    throw new KeyNotFoundException($"League {newTeam.LeagueName} not found.");
+                    throw new ArgumentException($"League {newTeam.LeagueName} not found.");
                 }
                 team.League = league;
             }

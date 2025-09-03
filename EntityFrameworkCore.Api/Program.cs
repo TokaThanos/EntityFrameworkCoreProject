@@ -26,7 +26,7 @@ public class Program
         string? connectionString = string.Empty;
         if (builder.Environment.IsDevelopment())
         {
-            DotNetEnv.Env.Load("../.env");
+            DotNetEnv.Env.TraversePath().Load();
 
             connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING");
 

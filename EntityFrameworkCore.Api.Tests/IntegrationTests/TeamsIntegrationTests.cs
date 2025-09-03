@@ -45,7 +45,7 @@ namespace EntityFrameworkCore.Api.Tests.IntegrationTests
         }
 
         [Fact]
-        public async Task PostTeam_Then_PutTeam_ShouldReturn_NotFound()
+        public async Task PostTeam_Then_PutTeam_ShouldReturn_BadRequest()
         {
             // Arrange
             var teamData = _fakeDataService.GetTeamCreateDtoFake();
@@ -59,7 +59,7 @@ namespace EntityFrameworkCore.Api.Tests.IntegrationTests
             var putResponse = await _client.PutAsJsonAsync($"{HttpHelper.teamsRequestUrl}/{teamId}", updateTeamData);
 
             // Assert
-            putResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            putResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Fact]
