@@ -7,7 +7,8 @@ using System.Net.Http.Json;
 
 namespace EntityFrameworkCore.Api.Tests.IntegrationTests
 {
-    public class TeamsIntegrationTests : IClassFixture<DockerWebApplicationTestFactory>
+    [Collection("IntegrationTestCollection")]
+    public class TeamsIntegrationTests
     {
         private readonly DockerWebApplicationTestFactory _factory;
         private readonly HttpClient _client;
@@ -24,13 +25,12 @@ namespace EntityFrameworkCore.Api.Tests.IntegrationTests
         public async Task PostTeam_Then_GetById_ShouldReturn_TheSameTeamData()
         {
             // Arrange
-            var fakeTeam = _fakeDataService.GetTeamCreateDtoFake();
+            var teamData = _fakeDataService.GetTeamCreateDtoFake();
 
             // Act
-            var postResponse = await _client.PostAsJsonAsync(HttpHelper.teamsRequestUrl, fakeTeam);
+            var postResponse = await _client.PostAsJsonAsync(HttpHelper.teamsRequestUrl, teamData);
             var createdTeam = await postResponse.Content.ReadFromJsonAsync<TeamReadDto>();
             var teamId = createdTeam!.Id;
-
 
             var getResponse = await _client.GetAsync($"{HttpHelper.teamsRequestUrl}/{teamId}");
             var teamInfo = await getResponse.Content.ReadFromJsonAsync<TeamReadInfoDto>();
@@ -40,23 +40,23 @@ namespace EntityFrameworkCore.Api.Tests.IntegrationTests
             postResponse.StatusCode.Should().Be(HttpStatusCode.Created);
             createdTeam.Should().NotBeNull();
             createdTeam!.Id.Should().BeGreaterThan(0);
-            teamInfo!.TeamName.Should().Be(fakeTeam.TeamName);
-            teamInfo.CoachName.Should().Be(fakeTeam.CoachName);
+            teamInfo!.TeamName.Should().Be(teamData.TeamName);
+            teamInfo.CoachName.Should().Be(teamData.CoachName);
         }
 
         [Fact]
         public async Task PostTeam_Then_PutTeam_ShouldReturn_NotFound()
         {
             // Arrange
-            var fakeTeam = _fakeDataService.GetTeamCreateDtoFake();
-            var fakeUpdateTeamData = _fakeDataService.GetTeamUpdateDtoFake();
+            var teamData = _fakeDataService.GetTeamCreateDtoFake();
+            var updateTeamData = _fakeDataService.GetTeamUpdateDtoFake();
 
             // Act
-            var postResponse = await _client.PostAsJsonAsync(HttpHelper.teamsRequestUrl, fakeTeam);
+            var postResponse = await _client.PostAsJsonAsync(HttpHelper.teamsRequestUrl, teamData);
             var createdTeam = await postResponse.Content.ReadFromJsonAsync<TeamReadDto>();
             var teamId = createdTeam!.Id;
 
-            var putResponse = await _client.PutAsJsonAsync($"{HttpHelper.teamsRequestUrl}/{teamId}", fakeUpdateTeamData);
+            var putResponse = await _client.PutAsJsonAsync($"{HttpHelper.teamsRequestUrl}/{teamId}", updateTeamData);
 
             // Assert
             putResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -66,10 +66,10 @@ namespace EntityFrameworkCore.Api.Tests.IntegrationTests
         public async Task PostTeam_Then_DeleteTeam_ShouldReturn_ExpectedResult()
         {
             // Arrange
-            var fakeTeam = _fakeDataService.GetTeamCreateDtoFake();
+            var teamData = _fakeDataService.GetTeamCreateDtoFake();
 
             // Act
-            var postResponse = await _client.PostAsJsonAsync(HttpHelper.teamsRequestUrl, fakeTeam);
+            var postResponse = await _client.PostAsJsonAsync(HttpHelper.teamsRequestUrl, teamData);
             var createdTeam = await postResponse.Content.ReadFromJsonAsync<TeamReadDto>();
             var teamId = createdTeam!.Id;
 
