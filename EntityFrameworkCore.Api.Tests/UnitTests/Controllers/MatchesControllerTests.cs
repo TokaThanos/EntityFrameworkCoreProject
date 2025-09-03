@@ -7,7 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
-namespace EntityFrameworkCore.Api.Tests.Controllers
+namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
 {
     public class MatchesControllerTests
     {
