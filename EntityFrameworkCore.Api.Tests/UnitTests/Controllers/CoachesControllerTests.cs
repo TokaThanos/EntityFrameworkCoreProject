@@ -1,7 +1,9 @@
 ﻿using EntityFrameworkCore.Api.Controllers;
+using EntityFrameworkCore.Application.Coaches.Commands;
+using EntityFrameworkCore.Application.Coaches.Queries;
 using EntityFrameworkCore.Application.Dtos;
-using EntityFrameworkCore.Application.Interfaces;
 using FluentAssertions;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -9,13 +11,13 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
 {
     public class CoachesControllerTests
     {
+        private readonly Mock<IMediator> _mediatorMock;
         private readonly CoachesController _coachesController;
-        private readonly Mock<ICoachService> _coachServiceMock;
 
         public CoachesControllerTests()
         {
-            _coachServiceMock = new Mock<ICoachService>();
-            _coachesController = new CoachesController(_coachServiceMock.Object);
+            _mediatorMock = new Mock<IMediator>();
+            _coachesController = new CoachesController(_mediatorMock.Object);
         }
 
         [Fact]
@@ -28,7 +30,8 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
                 new CoachReadDto { Id = 2, Name = "Coach B" }
             };
 
-            _coachServiceMock.Setup(service => service.GetAllCoachesAsync())
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<GetCoachesQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedOutput);
 
             // Act
@@ -52,7 +55,8 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
             // Arrange
             var expectedOutput = id > 0 ? new CoachReadInfoDto { CoachName = "Coach", TeamName = "Team" } : null;
 
-            _coachServiceMock.Setup(service => service.GetCoachByIdAsync(id))
+            _mediatorMock
+                .Setup(mediator => mediator.Send<CoachReadInfoDto?>(It.IsAny<GetCoachByIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedOutput);
 
             // Act
@@ -86,7 +90,8 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
                 Name = "Coach"
             };
 
-            _coachServiceMock.Setup(service => service.AddCoachAsync(requestInput))
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<CreateCoachCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedOutput);
 
             // Act
@@ -100,12 +105,37 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
         }
 
         [Fact]
+        public async Task CoachesController_PostCoach_ReturnsBadRequest()
+        {
+            // Arrange
+            var requestInput = new CoachCreateDto
+            {
+                CoachName = "Coach"
+            };
+
+            var exceptionMessage = "Coach name can't be null";
+
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<CreateCoachCommand>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new ArgumentException(exceptionMessage));
+
+            // Act
+            var result = await _coachesController.PostCoach(requestInput);
+
+            // Assert
+            var actionResult = result.Result.Should().BeOfType<BadRequestObjectResult>().Which;
+            actionResult.StatusCode.Should().Be(400);
+            actionResult.Value.Should().Be(exceptionMessage);
+        }
+
+        [Fact]
         public async Task CoachesController_DeleteCoach_ReturnsExpectedResult()
         {
             // Arrange
             var id = 1;
 
-            _coachServiceMock.Setup(service => service.DeleteCoachByIdAsync(id))
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<DeleteCoachCommand>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -113,7 +143,10 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
-            _coachServiceMock.Verify(service => service.DeleteCoachByIdAsync(id), Times.Once);
+            _mediatorMock
+                .Verify(mediator => mediator.Send(It.Is<DeleteCoachCommand>(
+                    command => command.Id == id),
+                    It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -126,7 +159,8 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
                 CoachName = "Coach"
             };
 
-            _coachServiceMock.Setup(service => service.UpdateCoachAsync(id, requestInput))
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<UpdateCoachCommand>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -134,7 +168,56 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
-            _coachServiceMock.Verify(service => service.UpdateCoachAsync(id, requestInput), Times.Once);
+            _mediatorMock
+                .Verify(mediator => mediator.Send(It.Is<UpdateCoachCommand>(
+                    command => command.Id == id && command.CoachCreateDto == requestInput),
+                    It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task CoachesController_PutCoach_ReturnsNotFound()
+        {
+            // Arrange
+            int id = 0;
+            var requestInput = new CoachCreateDto
+            {
+                CoachName = "Coach"
+            };
+            var exceptionMessage = $"Coach with Id {id} not found!";
+            _mediatorMock
+                .Setup(m => m.Send(It.IsAny<UpdateCoachCommand>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new KeyNotFoundException(exceptionMessage));
+
+            // Act
+            var result = await _coachesController.PutCoach(id, requestInput);
+
+            // Assert
+            var actionResult = result.Should().BeOfType<NotFoundObjectResult>().Which;
+            actionResult.StatusCode.Should().Be(404);
+            actionResult.Value.Should().Be(exceptionMessage);
+        }
+
+        [Fact]
+        public async Task CoachesController_PutCoach_ReturnsBadRequest()
+        {
+            // Arrange
+            int id = 0;
+            var requestInput = new CoachCreateDto
+            {
+                CoachName = "Coach"
+            };
+            var exceptionMessage = "Coach Name can't be null";
+            _mediatorMock
+                .Setup(m => m.Send(It.IsAny<UpdateCoachCommand>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new ArgumentException(exceptionMessage));
+
+            // Act
+            var result = await _coachesController.PutCoach(id, requestInput);
+
+            // Assert
+            var actionResult = result.Should().BeOfType<BadRequestObjectResult>().Which;
+            actionResult.StatusCode.Should().Be(400);
+            actionResult.Value.Should().Be(exceptionMessage);
         }
     }
 }
