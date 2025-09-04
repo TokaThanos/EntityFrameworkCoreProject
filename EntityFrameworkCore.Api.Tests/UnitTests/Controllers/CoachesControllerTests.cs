@@ -171,11 +171,11 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
             _mediatorMock
                 .Verify(mediator => mediator.Send(It.Is<UpdateCoachCommand>(
                     command => command.Id == id && command.CoachCreateDto == requestInput),
-                    It.IsAny<CancellationToken>()),Times.Once);
+                    It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
-        public async Task MatchesController_PutMatch_ReturnsNotFound()
+        public async Task CoachesController_PutCoach_ReturnsNotFound()
         {
             // Arrange
             int id = 0;
@@ -183,7 +183,7 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
             {
                 CoachName = "Coach"
             };
-            var exceptionMessage = $"Match with Id {id} not found!";
+            var exceptionMessage = $"Coach with Id {id} not found!";
             _mediatorMock
                 .Setup(m => m.Send(It.IsAny<UpdateCoachCommand>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new KeyNotFoundException(exceptionMessage));
@@ -198,7 +198,7 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
         }
 
         [Fact]
-        public async Task CoachesController_PutMatch_ReturnsBadRequest()
+        public async Task CoachesController_PutCoach_ReturnsBadRequest()
         {
             // Arrange
             int id = 0;

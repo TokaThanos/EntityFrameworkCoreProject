@@ -1,9 +1,7 @@
-﻿
-
-using EntityFrameworkCore.Application.Dtos;
+﻿using EntityFrameworkCore.Application.Dtos;
 using MediatR;
 
 namespace EntityFrameworkCore.Application.Coaches.Queries
 {
-    public record GetCoachByIdQuery(int Id) : IRequest<CoachReadInfoDto>;
+    public record GetCoachByIdQuery(int Id) : IRequest<CoachReadInfoDto?>;
 }
