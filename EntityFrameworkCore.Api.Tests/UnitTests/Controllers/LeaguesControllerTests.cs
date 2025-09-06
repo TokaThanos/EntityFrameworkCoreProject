@@ -1,7 +1,9 @@
 ﻿using EntityFrameworkCore.Api.Controllers;
 using EntityFrameworkCore.Application.Dtos;
-using EntityFrameworkCore.Application.Interfaces;
+using EntityFrameworkCore.Application.Leagues.Commands;
+using EntityFrameworkCore.Application.Leagues.Queries;
 using FluentAssertions;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -9,13 +11,13 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
 {
     public class LeaguesControllerTests
     {
-        private readonly Mock<ILeagueService> _leagueServiceMock;
+        private readonly Mock<IMediator> _mediatorMock;
         private readonly LeaguesController _leaguesController;
 
         public LeaguesControllerTests()
         {
-            _leagueServiceMock = new Mock<ILeagueService>();
-            _leaguesController = new LeaguesController(_leagueServiceMock.Object);
+            _mediatorMock = new Mock<IMediator>();
+            _leaguesController = new LeaguesController(_mediatorMock.Object);
         }
 
         [Fact]
@@ -28,7 +30,8 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
                 new LeagueReadDto { Id = 2, Name = "League 2" }
             };
 
-            _leagueServiceMock.Setup(service => service.GetAllLeaguesAsync())
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<GetLeaguesQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedOutput);
 
             // Act
@@ -62,7 +65,8 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
 
             var expectedOutput = id > 0 ? exampleOutput : null;
 
-            _leagueServiceMock.Setup(service => service.GetLeagueByIdAsync(id))
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<GetLeagueByIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedOutput);
 
             // Act
@@ -97,7 +101,8 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
                 Name = "League"
             };
 
-            _leagueServiceMock.Setup(service => service.AddLeagueAsync(requestInput))
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<CreateLeagueCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedOutput);
 
             // Act
@@ -111,12 +116,37 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
         }
 
         [Fact]
+        public async Task LeaguesController_PostLeague_ReturnsBadRequest()
+        {
+            // Arrange
+            var requestInput = new LeagueCreateDto
+            {
+                LeagueName = ""
+            };
+
+            var exceptionMessage = "League name can't be null";
+
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<CreateLeagueCommand>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new ArgumentException(exceptionMessage));
+
+            // Act
+            var result = await _leaguesController.PostLeague(requestInput);
+
+            // Assert
+            var actionResult = result.Result.Should().BeOfType<BadRequestObjectResult>().Which;
+            actionResult.StatusCode.Should().Be(400);
+            actionResult.Value.Should().Be(exceptionMessage);
+        }
+
+        [Fact]
         public async Task LeaguesController_DeleteLeague_ReturnsExpectedResult()
         {
             // Arrange
             var id = 1;
 
-            _leagueServiceMock.Setup(service => service.DeleteLeagueByIdAsync(id))
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<DeleteLeagueCommand>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -124,7 +154,10 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
-            _leagueServiceMock.Verify(service => service.DeleteLeagueByIdAsync(id), Times.Once);
+            _mediatorMock
+                .Verify(mediator => mediator.Send(It.Is<DeleteLeagueCommand>(
+                    command => command.Id == id),
+                    It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -137,7 +170,8 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
                 LeagueName = "League"
             };
 
-            _leagueServiceMock.Setup(service => service.UpdateLeagueAsync(id, requestInput))
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<UpdateLeagueCommand>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -145,7 +179,58 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
-            _leagueServiceMock.Verify(service => service.UpdateLeagueAsync(id, requestInput), Times.Once);
+            _mediatorMock
+                .Verify(mediator => mediator.Send(It.Is<UpdateLeagueCommand>(
+                    command => command.Id == id && command.LeagueCreateDto == requestInput),
+                    It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task LeaguesController_PutLeague_ReturnsBadRequest()
+        {
+            // Arrange
+            var id = 1;
+            var requestInput = new LeagueCreateDto
+            {
+                LeagueName = "League"
+            };
+            var exceptionMessage = "League Name can't be null";
+
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<UpdateLeagueCommand>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new ArgumentException(exceptionMessage));
+
+            // Act
+            var result = await _leaguesController.PutLeague(id, requestInput);
+
+            // Assert
+            var actionResult = result.Should().BeOfType<BadRequestObjectResult>().Which;
+            actionResult.StatusCode.Should().Be(400);
+            actionResult.Value.Should().Be(exceptionMessage);
+        }
+
+        [Fact]
+        public async Task LeaguesController_PutLeague_ReturnsNotFound()
+        {
+            // Arrange
+            var id = 1;
+            var requestInput = new LeagueCreateDto
+            {
+                LeagueName = ""
+            };
+            var exceptionMessage = $"League with ID {id} not found.";
+
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<UpdateLeagueCommand>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new KeyNotFoundException(exceptionMessage));
+
+            // Act
+            var result = await _leaguesController.PutLeague(id, requestInput);
+
+            // Assert
+            var actionResult = result.Should().BeOfType<NotFoundObjectResult>().Which;
+            actionResult.StatusCode.Should().Be(404);
+            actionResult.Value.Should().Be(exceptionMessage);
         }
     }
 }

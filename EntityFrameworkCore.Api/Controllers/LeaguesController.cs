@@ -1,5 +1,7 @@
 ﻿using EntityFrameworkCore.Application.Dtos;
-using EntityFrameworkCore.Application.Interfaces;
+using EntityFrameworkCore.Application.Leagues.Commands;
+using EntityFrameworkCore.Application.Leagues.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,11 +13,11 @@ namespace EntityFrameworkCore.Api.Controllers
     [ApiController]
     public class LeaguesController : ControllerBase
     {
-        private readonly ILeagueService _leagueService;
+        private readonly IMediator _mediator;
 
-        public LeaguesController(ILeagueService leagueService)
+        public LeaguesController(IMediator mediator)
         {
-            _leagueService = leagueService;
+            _mediator = mediator;
         }
 
         // GET: api/Leagues
@@ -23,7 +25,9 @@ namespace EntityFrameworkCore.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LeagueReadDto>>> GetLeagues()
         {
-            return Ok(await _leagueService.GetAllLeaguesAsync());
+            var query = new GetLeaguesQuery();
+            var coaches = await _mediator.Send(query);
+            return Ok(coaches);
         }
 
         // GET: api/Leagues/5
@@ -31,7 +35,8 @@ namespace EntityFrameworkCore.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<LeagueReadInfoDto>> GetLeague(int id)
         {
-            var league = await _leagueService.GetLeagueByIdAsync(id);
+            var query = new GetLeagueByIdQuery(id);
+            var league = await _mediator.Send(query);
             if (league == null)
             {
                 return NotFound();
@@ -45,9 +50,10 @@ namespace EntityFrameworkCore.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutLeague(int id, LeagueCreateDto league)
         {
+            var command = new UpdateLeagueCommand(id, league);
             try
             {
-                await _leagueService.UpdateLeagueAsync(id, league);
+                await _mediator.Send(command);
             }
             catch (ArgumentException ex)
             {
@@ -76,9 +82,10 @@ namespace EntityFrameworkCore.Api.Controllers
         public async Task<ActionResult<LeagueReadDto>> PostLeague(LeagueCreateDto league)
         {
             LeagueReadDto createdLeague;
+            var command = new CreateLeagueCommand(league);
             try
             {
-                createdLeague = await _leagueService.AddLeagueAsync(league);
+                createdLeague = await _mediator.Send(command);
             }
             catch (ArgumentException ex)
             {
@@ -93,7 +100,8 @@ namespace EntityFrameworkCore.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLeague(int id)
         {
-            await _leagueService.DeleteLeagueByIdAsync(id);
+            var command = new DeleteLeagueCommand(id);
+            await _mediator.Send(command);
             return NoContent();
         }
     }
