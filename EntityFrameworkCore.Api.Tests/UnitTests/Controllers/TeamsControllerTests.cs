@@ -1,7 +1,9 @@
 ﻿using EntityFrameworkCore.Api.Controllers;
 using EntityFrameworkCore.Application.Dtos;
-using EntityFrameworkCore.Application.Interfaces;
+using EntityFrameworkCore.Application.Teams.Commands;
+using EntityFrameworkCore.Application.Teams.Queries;
 using FluentAssertions;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -9,13 +11,13 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
 {
     public class TeamsControllerTests
     {
+        private readonly Mock<IMediator> _mediatorMock;
         private readonly TeamsController _teamsController;
-        private readonly Mock<ITeamService> _teamServiceMock;
 
         public TeamsControllerTests()
         {
-            _teamServiceMock = new Mock<ITeamService>();
-            _teamsController = new TeamsController(_teamServiceMock.Object);
+            _mediatorMock = new Mock<IMediator>();
+            _teamsController = new TeamsController(_mediatorMock.Object);
         }
         [Fact]
         public async Task TeamsController_GetTeams_ReturnsExpectedResult()
@@ -27,7 +29,8 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
                 new TeamReadDto { Id = 2, Name = "Team B" }
             };
 
-            _teamServiceMock.Setup(service => service.GetAllTeamsAsync())
+            _mediatorMock.
+                Setup(mediator => mediator.Send(It.IsAny<GetTeamsQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedOutput);
 
             // Act
@@ -51,7 +54,7 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
             // Arrange
             var expectedOutput = id > 0 ? new TeamReadInfoDto { TeamName = "Team", CoachName = "Coach" } : null;
 
-            _teamServiceMock.Setup(service => service.GetTeamByIdAsync(id))
+            _mediatorMock.Setup(mediator => mediator.Send(It.IsAny<GetTeamByIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedOutput);
 
             // Act
@@ -87,7 +90,8 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
                 Name = "Test Team"
             };
 
-            _teamServiceMock.Setup(service => service.AddTeamAsync(requestInput))
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<CreateTeamCommand>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedOutput);
 
             // Act
@@ -101,12 +105,39 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
         }
 
         [Fact]
+        public async Task TeamsController_PostTeam_ReturnsBadRequest()
+        {
+            // Arrange
+            var requestInput = new TeamCreateDto
+            {
+                TeamName = "Test Team",
+                CoachName = "Test Coach",
+                LeagueName = "Test League"
+            };
+
+            var exceptionMessage = $"League {requestInput.LeagueName} not found.";
+
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<CreateTeamCommand>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new ArgumentException(exceptionMessage));
+
+            // Act
+            var result = await _teamsController.PostTeam(requestInput);
+
+            // Assert
+            var actionResult = result.Result.Should().BeOfType<BadRequestObjectResult>().Which;
+            actionResult.StatusCode.Should().Be(400);
+            actionResult.Value.Should().Be(exceptionMessage);
+        }
+
+        [Fact]
         public async Task TeamsController_DeleteTeam_ReturnsExpectedResult()
         {
             // Arrange
             var id = 1;
 
-            _teamServiceMock.Setup(service => service.DeleteTeamByIdAsync(id))
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<DeleteTeamCommand>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -114,7 +145,10 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
-            _teamServiceMock.Verify(service => service.DeleteTeamByIdAsync(id), Times.Once);
+            _mediatorMock
+                .Verify(mediator => mediator.Send(It.Is<DeleteTeamCommand>(
+                    command => command.Id == id),
+                    It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -129,7 +163,8 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
                 LeagueName = "Updated League"
             };
 
-            _teamServiceMock.Setup(service => service.UpdateTeamAsync(id, requestInput))
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<UpdateTeamCommand>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -137,7 +172,64 @@ namespace EntityFrameworkCore.Api.Tests.UnitTests.Controllers
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
-            _teamServiceMock.Verify(service => service.UpdateTeamAsync(id, requestInput), Times.Once);
+            _mediatorMock
+                .Verify(mediator => mediator.Send(It.Is<UpdateTeamCommand>(
+                    command => command.Id == id),
+                    It.IsAny<CancellationToken>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task TeamsController_PutTeam_ReturnsNotFound()
+        {
+            // Arrange
+            var id = 1;
+            var requestInput = new TeamUpdateDto
+            {
+                TeamName = "Updated Team",
+                CoachName = "Updated Coach",
+                LeagueName = "Updated League"
+            };
+
+            var exceptionMessage = $"Team with ID {id} not found.";
+
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<UpdateTeamCommand>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new KeyNotFoundException(exceptionMessage));
+
+            // Act
+            var result = await _teamsController.PutTeam(id, requestInput);
+
+            // Assert
+            var actionResult = result.Should().BeOfType<NotFoundObjectResult>().Which;
+            actionResult.StatusCode.Should().Be(404);
+            actionResult.Value.Should().Be(exceptionMessage);
+        }
+
+        [Fact]
+        public async Task TeamsController_PutTeam_ReturnsBadRequest()
+        {
+            // Arrange
+            var id = 1;
+            var requestInput = new TeamUpdateDto
+            {
+                TeamName = "Updated Team",
+                CoachName = "Updated Coach",
+                LeagueName = "Updated League"
+            };
+
+            var exceptionMessage = $"League {requestInput.LeagueName} not found.";
+
+            _mediatorMock
+                .Setup(mediator => mediator.Send(It.IsAny<UpdateTeamCommand>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new ArgumentException(exceptionMessage));
+
+            // Act
+            var result = await _teamsController.PutTeam(id, requestInput);
+
+            // Assert
+            var actionResult = result.Should().BeOfType<BadRequestObjectResult>().Which;
+            actionResult.StatusCode.Should().Be(400);
+            actionResult.Value.Should().Be(exceptionMessage);
         }
     }
 }
