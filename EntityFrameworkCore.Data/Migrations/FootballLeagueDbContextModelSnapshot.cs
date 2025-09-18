@@ -3,8 +3,8 @@ using System;
 using EntityFrameworkCore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -18,33 +18,33 @@ namespace EntityFrameworkCore.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "9.0.3")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.Coach", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.Coach", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -74,29 +74,29 @@ namespace EntityFrameworkCore.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.League", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.League", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -126,43 +126,46 @@ namespace EntityFrameworkCore.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.Match", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.Match", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AwayTeamId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("AwayTeamScore")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("HomeTeamId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("HomeTeamScore")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("TicketPrice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
@@ -173,15 +176,15 @@ namespace EntityFrameworkCore.Data.Migrations
                     b.ToTable("Matches");
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.Role", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -205,35 +208,35 @@ namespace EntityFrameworkCore.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.Team", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.Team", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CoachId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("LeagueId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -249,7 +252,7 @@ namespace EntityFrameworkCore.Data.Migrations
                         {
                             Id = 101,
                             CoachId = 1,
-                            CreatedDate = new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Utc),
                             LeagueId = 3,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Manchester United"
@@ -258,7 +261,7 @@ namespace EntityFrameworkCore.Data.Migrations
                         {
                             Id = 102,
                             CoachId = 3,
-                            CreatedDate = new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Utc),
                             LeagueId = 1,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "F.C. Barcelona"
@@ -267,56 +270,49 @@ namespace EntityFrameworkCore.Data.Migrations
                         {
                             Id = 103,
                             CoachId = 2,
-                            CreatedDate = new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2000, 1, 23, 0, 0, 0, 0, DateTimeKind.Utc),
                             LeagueId = 1,
                             ModifiedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Real Madrid"
                         });
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.TeamsAndLeaguesView", b =>
-                {
-                    b.Property<string>("LeagueName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TeamName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("vw_TeamsAndLeagues", (string)null);
-                });
-
-            modelBuilder.Entity("EntityFrameworkCore.Domain.User", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserNameNormalized")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.UserRole", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.UserRole", b =>
                 {
                     b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -325,15 +321,15 @@ namespace EntityFrameworkCore.Data.Migrations
                     b.ToTable("UserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.Match", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.Match", b =>
                 {
-                    b.HasOne("EntityFrameworkCore.Domain.Team", "AwayTeam")
+                    b.HasOne("EntityFrameworkCore.Domain.Entities.Team", "AwayTeam")
                         .WithMany("AwayMatches")
                         .HasForeignKey("AwayTeamId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("EntityFrameworkCore.Domain.Team", "HomeTeam")
+                    b.HasOne("EntityFrameworkCore.Domain.Entities.Team", "HomeTeam")
                         .WithMany("HomeMatches")
                         .HasForeignKey("HomeTeamId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -344,15 +340,15 @@ namespace EntityFrameworkCore.Data.Migrations
                     b.Navigation("HomeTeam");
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.Team", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.Team", b =>
                 {
-                    b.HasOne("EntityFrameworkCore.Domain.Coach", "Coach")
+                    b.HasOne("EntityFrameworkCore.Domain.Entities.Coach", "Coach")
                         .WithOne("Team")
-                        .HasForeignKey("EntityFrameworkCore.Domain.Team", "CoachId")
+                        .HasForeignKey("EntityFrameworkCore.Domain.Entities.Team", "CoachId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EntityFrameworkCore.Domain.League", "League")
+                    b.HasOne("EntityFrameworkCore.Domain.Entities.League", "League")
                         .WithMany("Teams")
                         .HasForeignKey("LeagueId");
 
@@ -361,15 +357,15 @@ namespace EntityFrameworkCore.Data.Migrations
                     b.Navigation("League");
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.UserRole", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.UserRole", b =>
                 {
-                    b.HasOne("EntityFrameworkCore.Domain.Role", "Role")
+                    b.HasOne("EntityFrameworkCore.Domain.Entities.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EntityFrameworkCore.Domain.User", "User")
+                    b.HasOne("EntityFrameworkCore.Domain.Entities.User", "User")
                         .WithMany("UserRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -380,24 +376,24 @@ namespace EntityFrameworkCore.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.Coach", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.Coach", b =>
                 {
                     b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.League", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.League", b =>
                 {
                     b.Navigation("Teams");
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.Team", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.Team", b =>
                 {
                     b.Navigation("AwayMatches");
 
                     b.Navigation("HomeMatches");
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.Domain.User", b =>
+            modelBuilder.Entity("EntityFrameworkCore.Domain.Entities.User", b =>
                 {
                     b.Navigation("UserRoles");
                 });

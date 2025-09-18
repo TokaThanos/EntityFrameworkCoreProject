@@ -1,5 +1,7 @@
 ﻿using EntityFrameworkCore.Application.Dtos;
-using EntityFrameworkCore.Application.Interfaces;
+using EntityFrameworkCore.Application.Teams.Commands;
+using EntityFrameworkCore.Application.Teams.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,11 +13,11 @@ namespace EntityFrameworkCore.Api.Controllers
     [ApiController]
     public class TeamsController : ControllerBase
     {
-        private readonly ITeamService _teamService;
+        private readonly IMediator _mediator;
 
-        public TeamsController(ITeamService teamService)
+        public TeamsController(IMediator mediator)
         {
-            _teamService = teamService;
+            _mediator = mediator;
         }
 
         // GET: api/Teams
@@ -23,7 +25,9 @@ namespace EntityFrameworkCore.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TeamReadDto>>> GetTeams()
         {
-            return Ok(await _teamService.GetAllTeamsAsync());
+            var query = new GetTeamsQuery();
+            var teams = await _mediator.Send(query);
+            return Ok(teams);
         }
 
         // GET: api/Teams/5
@@ -31,13 +35,12 @@ namespace EntityFrameworkCore.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<TeamReadInfoDto>> GetTeam(int id)
         {
-            var team = await _teamService.GetTeamByIdAsync(id);
-
+            var query = new GetTeamByIdQuery(id);
+            var team = await _mediator.Send(query);
             if (team == null)
             {
                 return NotFound();
             }
-
             return Ok(team);
         }
 
@@ -45,11 +48,12 @@ namespace EntityFrameworkCore.Api.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize(Roles = "mod")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTeam(int id, TeamCreateDto team)
+        public async Task<IActionResult> PutTeam(int id, TeamUpdateDto team)
         {
+            var command = new UpdateTeamCommand(id, team);
             try
             {
-                await _teamService.UpdateTeamAsync(id, team);
+                await _mediator.Send(command);
                 return NoContent();
             }
             catch (KeyNotFoundException ex)
@@ -77,9 +81,10 @@ namespace EntityFrameworkCore.Api.Controllers
         public async Task<ActionResult<TeamReadDto>> PostTeam(TeamCreateDto team)
         {
             TeamReadDto createdTeam;
+            var command = new CreateTeamCommand(team);
             try
             {
-                createdTeam = await _teamService.AddTeamAsync(team);
+                createdTeam = await _mediator.Send(command);
             }
             catch (ArgumentException ex)
             {
@@ -94,8 +99,8 @@ namespace EntityFrameworkCore.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTeam(int id)
         {
-            await _teamService.DeleteTeamByIdAsync(id);
-
+            var command = new DeleteTeamCommand(id);
+            await _mediator.Send(command);
             return NoContent();
         }
     }

@@ -14,6 +14,6 @@ namespace EntityFrameworkCore.Application.Interfaces
         Task<TeamReadInfoDto?> GetTeamByIdAsync(int id);
         Task DeleteTeamByIdAsync(int id);
         Task<TeamReadDto> AddTeamAsync(TeamCreateDto team);
-        Task UpdateTeamAsync(int id, TeamCreateDto team);
+        Task UpdateTeamAsync(int id, TeamUpdateDto team);
     }
 }

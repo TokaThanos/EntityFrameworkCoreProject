@@ -1,8 +1,6 @@
 ﻿using EntityFrameworkCore.Console;
 using EntityFrameworkCore.Data;
-using EntityFrameworkCore.Data.Utility;
-using EntityFrameworkCore.Domain;
-using Microsoft.Data.SqlClient;
+using EntityFrameworkCore.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 using FootballLeagueDbContext context = new FootballLeagueDbContext();
@@ -17,7 +15,7 @@ Use projections when building APIs, lists, or dashboards which are read only —
 #endregion
 
 #region Method Calls
-// await GetAllTeamsAsync();
+ await GetAllTeamsAsync();
 // await GetOneTeamAsync();
 // await GetMoreThanOneTeamAsync();
 // await AggregateMethodsAsync();
@@ -59,7 +57,7 @@ Use projections when building APIs, lists, or dashboards which are read only —
 // await RawSqlWithLINQ();
 // await ExecuteNonQueryStatementUsingRawSql();
 // await ExecuteStoredProcedureUsingScalarOrNonEntityType();
-await ExecuteUserDefinedFunction();
+// await ExecuteUserDefinedFunction();
 
 #endregion
 
@@ -227,7 +225,7 @@ async Task AddNewCoachAsync()
     var newCoach = new Coach
     {
         Name = "Jose Mourinho",
-        CreatedDate = DateTime.Now,
+        CreatedDate = DateTime.UtcNow,
     };
     await context.Coaches.AddAsync(newCoach);
     await context.SaveChangesAsync();
@@ -240,12 +238,12 @@ async Task AddNewCoachesAsync()
         new Coach
         {
             Name = "Carlo Ancelotti",
-            CreatedDate = DateTime.Now,
+            CreatedDate = DateTime.UtcNow,
         },
         new Coach
         {
             Name = "Pep Guardiola",
-            CreatedDate = DateTime.Now,
+            CreatedDate = DateTime.UtcNow,
         }
     };
     await context.Coaches.AddRangeAsync(newCoaches);
@@ -299,7 +297,7 @@ async Task ExecuteUpdateAsync()
         .Where(coach => coach.Name == "Jose Mourinho")
         .ExecuteUpdateAsync(coach => coach
         .SetProperty(prop => prop.Name, "Hansi Flick")
-        .SetProperty(prop => prop.CreatedDate, DateTime.Now)       
+        .SetProperty(prop => prop.CreatedDate, DateTime.UtcNow)       
     );
 }
 #endregion
@@ -544,23 +542,23 @@ async Task GetTeamDetailsWithAdvancedProjectionAsync()
 #endregion
 
 #region Raw SQL
-async Task TeamsAndLeaguesView()
-{
-    var details = await context.TeamsAndLeaguesView.ToListAsync();
-    foreach (var item in details)
-    {
-        Console.WriteLine($"Team Name - {item.TeamName} | League Name - {item.LeagueName}");
-    }
-}
+//async Task TeamsAndLeaguesView()
+//{
+//    var details = await context.TeamsAndLeaguesView.ToListAsync();
+//    foreach (var item in details)
+//    {
+//        Console.WriteLine($"Team Name - {item.TeamName} | League Name - {item.LeagueName}");
+//    }
+//}
 
-async Task UsingSqlRaw()
-{
-    Console.WriteLine("Search Team: ");
-    var name = Console.ReadLine();
-    var param = new SqlParameter("teamName", name); // Always parameterize input while using FromSqlRaw to prevent sql injection
-    var team = await context.Teams.FromSqlRaw($"SELECT * FROM Teams WHERE name = @teamName", param).FirstOrDefaultAsync();
-    Console.WriteLine($"{team?.Name}");
-}
+//async Task UsingSqlRaw()
+//{
+//    Console.WriteLine("Search Team: ");
+//    var name = Console.ReadLine();
+//    var param = new SqlParameter("teamName", name); // Always parameterize input while using FromSqlRaw to prevent sql injection
+//    var team = await context.Teams.FromSqlRaw($"SELECT * FROM Teams WHERE name = @teamName", param).FirstOrDefaultAsync();
+//    Console.WriteLine($"{team?.Name}");
+//}
 
 async Task UsingSqlInterpolated()
 {
@@ -582,7 +580,7 @@ async Task RawSqlWithLINQ()
 async Task ExecuteNonQueryStatementUsingRawSql()
 {
     var leagueName = "Ligue 1";
-    var createdDate = DateTime.Now;
+    var createdDate = DateTime.UtcNow;
     await context.Database.ExecuteSqlInterpolatedAsync($@"
         INSERT INTO Leagues (Name, CreatedDate, ModifiedDate)  
         VALUES ({leagueName}, {createdDate}, {createdDate})"
@@ -603,18 +601,18 @@ async Task ExecuteStoredProcedureUsingScalarOrNonEntityType()
     }
 }
 
-async Task ExecuteUserDefinedFunction()
-{
-    var result = await context.Teams
-        .Where(team => team.Id == 101)
-        .Select(team => new
-        {
-            TeamName = team.Name,
-            CoachName = UserDefinedFunctions.GetCoachNameByTeamId(team.Id) // Must use this function inside a LINQ query or it will throw not implemented error
-        })
-        .FirstOrDefaultAsync();
+//async Task ExecuteUserDefinedFunction()
+//{
+//    var result = await context.Teams
+//        .Where(team => team.Id == 101)
+//        .Select(team => new
+//        {
+//            TeamName = team.Name,
+//            CoachName = UserDefinedFunctions.GetCoachNameByTeamId(team.Id) // Must use this function inside a LINQ query or it will throw not implemented error
+//        })
+//        .FirstOrDefaultAsync();
     
-    Console.WriteLine($"{result?.TeamName} -> {result?.CoachName}");
-}
+//    Console.WriteLine($"{result?.TeamName} -> {result?.CoachName}");
+//}
 
 #endregion

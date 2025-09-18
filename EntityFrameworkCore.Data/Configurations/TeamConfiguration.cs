@@ -1,4 +1,4 @@
-using EntityFrameworkCore.Domain;
+using EntityFrameworkCore.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -20,9 +20,9 @@ internal class TeamConfiguration : IEntityTypeConfiguration<Team>
             .OnDelete(DeleteBehavior.Restrict);
         
         builder.HasData(
-            new Team { Id = 101, Name = "Manchester United", CreatedDate = new DateTime(2000, 01, 23), CoachId = 1, LeagueId = 3 },
-            new Team { Id = 102, Name = "F.C. Barcelona", CreatedDate = new DateTime(2000, 01, 23), CoachId = 3, LeagueId = 1 },
-            new Team { Id = 103, Name = "Real Madrid", CreatedDate = new DateTime(2000, 01, 23), CoachId = 2, LeagueId = 1 }
+            new Team { Id = 101, Name = "Manchester United", CreatedDate = new DateTime(2000, 01, 23, 0, 0, 0, DateTimeKind.Utc), CoachId = 1, LeagueId = 3 },
+            new Team { Id = 102, Name = "F.C. Barcelona", CreatedDate = new DateTime(2000, 01, 23, 0, 0, 0, DateTimeKind.Utc), CoachId = 3, LeagueId = 1 },
+            new Team { Id = 103, Name = "Real Madrid", CreatedDate = new DateTime(2000, 01, 23, 0, 0, 0, DateTimeKind.Utc), CoachId = 2, LeagueId = 1 }
         );
     }
 }

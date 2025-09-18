@@ -1,13 +1,8 @@
 ﻿using EntityFrameworkCore.Application.Dtos;
 using EntityFrameworkCore.Application.Interfaces;
 using EntityFrameworkCore.Data;
-using EntityFrameworkCore.Domain;
+using EntityFrameworkCore.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.Application.Services
 {
@@ -26,9 +21,11 @@ namespace EntityFrameworkCore.Application.Services
                 throw new ArgumentException("League name can't be null");
             }
 
-            League league = new League();
+            League league = new League
+            {
+                Name = leagueCreateDto.LeagueName,
+            };
 
-            league.Name = leagueCreateDto.LeagueName;
             _context.Leagues.Add(league);
 
             await _context.SaveChangesAsync();

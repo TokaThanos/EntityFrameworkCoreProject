@@ -1,5 +1,7 @@
-﻿using EntityFrameworkCore.Application.Dtos;
-using EntityFrameworkCore.Application.Interfaces;
+﻿using EntityFrameworkCore.Application.Coaches.Commands;
+using EntityFrameworkCore.Application.Coaches.Queries;
+using EntityFrameworkCore.Application.Dtos;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,11 +13,11 @@ namespace EntityFrameworkCore.Api.Controllers
     [ApiController]
     public class CoachesController : ControllerBase
     {
-        private readonly ICoachService _coachService;
+        private readonly IMediator _mediator;
 
-        public CoachesController(ICoachService coachService)
+        public CoachesController(IMediator mediator)
         {
-            _coachService = coachService;
+            _mediator = mediator;
         }
 
         // GET: api/Coaches
@@ -23,7 +25,9 @@ namespace EntityFrameworkCore.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CoachReadDto>>> GetCoaches()
         {
-            return Ok(await _coachService.GetAllCoachesAsync());
+            var query = new GetCoachesQuery();
+            var coaches = await _mediator.Send(query);
+            return Ok(coaches);
         }
 
         // GET: api/Coaches/5
@@ -31,7 +35,8 @@ namespace EntityFrameworkCore.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CoachReadInfoDto>> GetCoach(int id)
         {
-            var coach = await _coachService.GetCoachByIdAsync(id);
+            var query = new GetCoachByIdQuery(id);
+            var coach = await _mediator.Send(query);
             if (coach == null)
             {
                 return NotFound();
@@ -44,8 +49,8 @@ namespace EntityFrameworkCore.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCoach(int id)
         {
-            await _coachService.DeleteCoachByIdAsync(id);
-
+            var command = new DeleteCoachCommand(id);
+            await _mediator.Send(command);
             return NoContent();
         }
 
@@ -54,10 +59,11 @@ namespace EntityFrameworkCore.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<CoachReadDto>> PostCoach(CoachCreateDto coach)
         {
+            var command = new CreateCoachCommand(coach);
             CoachReadDto createdCoach;
             try
             {
-                createdCoach = await _coachService.AddCoachAsync(coach);
+                createdCoach = await _mediator.Send(command);
             }
             catch (ArgumentException ex)
             {
@@ -71,9 +77,10 @@ namespace EntityFrameworkCore.Api.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> PutCoach(int id, CoachCreateDto coach)
         {
+            var command = new UpdateCoachCommand(id, coach);
             try
             {
-                await _coachService.UpdateCoachAsync(id, coach);
+                await _mediator.Send(command);
             }
             catch (ArgumentException ex)
             {

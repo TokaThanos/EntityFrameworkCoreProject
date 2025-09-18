@@ -1,7 +1,7 @@
 ﻿using EntityFrameworkCore.Application.Dtos;
 using EntityFrameworkCore.Application.Interfaces;
 using EntityFrameworkCore.Data;
-using EntityFrameworkCore.Domain;
+using EntityFrameworkCore.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +12,7 @@ using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,7 +28,7 @@ namespace EntityFrameworkCore.Application.Services
             _context = context;
             _configuration = configuration;
         }
-        public async Task<string?> LoginAsync(UserRequestDto request)
+        public async Task<LoginResponseDto?> LoginAsync(UserRequestDto request)
         {
             var normalizedUserName = request.UserName.ToLowerInvariant();
             var user = await _context.Users
@@ -45,10 +46,17 @@ namespace EntityFrameworkCore.Application.Services
                 return null;
             }
 
-            return CreateToken(user);
+            var userLoginInfo = new LoginResponseDto
+            {
+                AccessToken = CreateToken(user),
+                RefreshToken = await GenerateAndSaveRefreshTokenAsync(user),
+                UserId = user.Id
+            };
+
+            return userLoginInfo;
         }
 
-        public async Task<UserResponseDto?> RegisterAsync(UserRequestDto request)
+        public async Task<Guid?> RegisterAsync(UserRequestDto request)
         {
             var normalizedUserName = request.UserName.ToLowerInvariant();
 
@@ -79,13 +87,57 @@ namespace EntityFrameworkCore.Application.Services
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            var userInfo = new UserResponseDto
-            {
-                Id = user.Id,
-                UserName = request.UserName
-            };
+            return user.Id;
+        }
 
-            return userInfo;
+        public async Task<TokenResponseDto?> TokenRefreshAsync(RefreshTokenRequestDto request)
+        {
+            var user = await ValidateRefreshTokenAsync(request);
+
+            if (user is null)
+            {
+                return null;
+            }
+
+            var tokenInfo = new TokenResponseDto
+            {
+                AccessToken = CreateToken(user),
+                RefreshToken = await GenerateAndSaveRefreshTokenAsync(user),
+            };
+            return tokenInfo;
+        }
+
+        private async Task<User?> ValidateRefreshTokenAsync(RefreshTokenRequestDto request)
+        {
+            var user = await _context.Users
+                .Include(user => user.UserRoles)
+                .ThenInclude(userRole => userRole.Role)
+                .FirstOrDefaultAsync(user => user.Id == request.UserId);
+
+            if (user is null || user.RefreshToken != request.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+            {
+                return null;
+            }
+
+            return user;
+        }
+
+        private async Task<string> GenerateAndSaveRefreshTokenAsync(User user)
+        {
+            var refreshToken = GenerateRefreshToken();
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return refreshToken;
+        }
+
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[64];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
         }
 
         private string CreateToken(User user)
