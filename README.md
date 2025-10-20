@@ -2,7 +2,7 @@
 
 ![ERD Diagram](images/erd.png)
 
-This solution demonstrates a football league management system using Entity Framework Core with a SQL Server backend. It includes projects for the domain models, data access, and a console application to interact with the database.
+This solution demonstrates a football league management system using Entity Framework Core with a **PostgreSQL** backend. It includes projects for the domain models, data access, and a console application to interact with the database.
 
 ## Project Structure
 
@@ -16,24 +16,24 @@ This solution demonstrates a football league management system using Entity Fram
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download)
 - [Docker](https://www.docker.com/products/docker-desktop)
-- [SQL Server Docker Image](https://hub.docker.com/_/microsoft-mssql-server)
+- [PostgreSQL Docker Image](https://hub.docker.com/_/postgres)
 
 ## Setting Up the Environment
 
-### 1. Set the SQL Server SA Password and JWT Key with a `.env` File
+### 1. Set the PostgreSQL Password and JWT Key with a `.env` File
 
-The project uses a `.env` file to store environment variables, including the SQL Server `sa` password and a secure JWT signing key.
+The project uses a `.env` file to store environment variables, including the PostgreSQL password and a secure JWT signing key.
 
 1. Create a file named `.env` in the root of your project.
 2. Add the following lines, replacing `YourStrong!Passw0rd` with your password and `Base64Encoded64ByteKeyHere` with your generated signing key:
    ```
    DB_PASSWORD=YourStrong!Passw0rd
    JWT_KEY=Base64Encoded64ByteKeyHere
-   SQL_CONNECTION_STRING=Server=localhost,1433;Database=FootballLeague_EfCore;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
+   POSTGRES_CONNECTION_STRING=Host=localhost;Port=5432;Database=FootballLeague_EfCore;Username=postgres;Password=YourStrong!Passw0rd;
    ```
    The `Database=FootballLeague_EfCore;` part is the actual name EF Core will use when creating the database.
    
-4. Generate a secure 64-byte JWT key (Base64 encoded) — recommended for HS512:
+3. Generate a secure 64-byte JWT key (Base64 encoded) — recommended for HS512:
 
 - **PowerShell (Windows)**:
   ```powershell
@@ -51,7 +51,7 @@ The project uses a `.env` file to store environment variables, including the SQL
 
 > **Note:** Do not commit your actual `.env` file with sensitive information to version control.
 
-### 2. Start SQL Server with Docker Compose
+### 2. Start PostgreSQL with Docker Compose
 
 From the root of the solution (where `docker-compose.yaml` is located), run:
 
@@ -59,7 +59,7 @@ From the root of the solution (where `docker-compose.yaml` is located), run:
 docker compose up -d
 ```
 
-This will start a SQL Server instance on port 1433.
+This will start a PostgreSQL instance on port 5432.
 
 ### 3. Apply and List Entity Framework Core Migrations
 
@@ -102,7 +102,7 @@ This will start the web application.
   ```sh
   docker ps
   ```
-- **Stop the SQL Server container:**
+- **Stop the PostgreSQL container:**
   ```sh
   docker compose stop
   ```
@@ -112,7 +112,7 @@ This will start the web application.
 All migration files are located in [`EntityFrameworkCore.Data/Migrations`](EntityFrameworkCore.Data/Migrations). You can add new migrations from the root folder using:
 
 ```sh
-dotnet ef migrations add MigrationName --project EntityFrameworkCore.Data --startup-project EntityFrameworkCore.Console
+dotnet ef migrations add MigrationName --project EntityFrameworkCore.Data --startup-project EntityFrameworkCore.Api
 ```
 
 ## License
